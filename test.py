@@ -22,9 +22,7 @@ styles = {
     "table_caption": {"FaceName": "돋움", "Height": 14, "Bold": True, "Align": "center"},
     "date":       {"FaceName": "바탕체", "Height": 15, "Bold": False, "Align": "right"},
     "school_name": {"FaceName": "돋움", "Height": 16, "Bold": False, "Align": "right"},
-    "principal":  {"FaceName": "바탕체", "Height": 17, "Bold": True, "Align": "right"},
-    "header_style" : {"FaceName": "돋움", "Height": 14, "Bold": True},
-    "cell_style"   : {"FaceName": "바탕체", "Height": 11, "Bold": False}
+    "principal":  {"FaceName": "바탕체", "Height": 17, "Bold": True, "Align": "right"},   
 }
 
 # 표 데이터 입력 예시 (간단 3x4)
@@ -130,39 +128,15 @@ def insert_role_and_style(role):
         hwp.set_font(**base_opts)
     hwp.insert_text("\r\n")
 
-"""def insert_table_and_style(table_data, header_style=None, cell_style=None):
-    rows, cols = len(table_data), len(table_data[0])
-    hwp.create_table(rows, cols, treat_as_char=True)
-    for r, row in enumerate(table_data):
-        is_header = (r == 0 and header_style is not None)
-        style = header_style if is_header else cell_style
-        for c, cell in enumerate(row):
-            segments = cell if isinstance(cell, list) else parse_segments(str(cell))
-            # 셀 안의 segment 리스트(부분 텍스트+스타일) 반복 처리
-            
-            for seg in segments:
-                font_opts = {
-                    "FaceName": style["FaceName"],
-                    "Height": style["Height"],
-                    "Bold": seg.get("bold", style["Bold"]),
-                    "Italic": seg.get("italic", False)
-                }
-                                
-                hwp.set_font(**font_opts)
-                hwp.TableCellAlignCenterCenter()
-                hwp.insert_text(seg["text"] if isinstance(seg, dict) else seg)
+def hex_to_rgb(hex_color):
+    hex_color = hex_color.lstrip('#')
+    red = int(hex_color[0:2], 16)
+    green = int(hex_color[2:4], 16)
+    blue = int(hex_color[4:6], 16)
+    return (red, green, blue)
 
-                hwp.set_font(**style)
-                
-            if c < cols - 1:
-                hwp.TableRightCell()
-        if r < rows - 1:
-            hwp.TableLowerCell()
-            for _ in range(cols - 1):
-                hwp.TableLeftCell()
-    hwp.MoveDown()"""
-
-def insert_table_and_style(table_data, cell_styles=None, col_widths=None, row_heights=None, cell_bg_colors=None, col_aligns=None):
+import time
+def insert_table_and_style(table_data, cell_styles=None, cell_bg_colors=None, col_aligns=None):
     """
     table_data      : 2D list, each cell is text. (ex: [["학년", "일자"], ["3", "12.2.(화)"]])
     cell_styles     : 2D list, 각 셀 별 {"FaceName", "Height", "Bold", ...} dict.
@@ -173,16 +147,10 @@ def insert_table_and_style(table_data, cell_styles=None, col_widths=None, row_he
     """
     rows, cols = len(table_data), len(table_data[0])
     hwp.create_table(rows, cols, treat_as_char=True)
-    # 열 너비 적용
-    if col_widths:
-        for c, w in enumerate(col_widths):
-            hwp.set_col_width(c, w)
-    # 행 높이 적용
-    if row_heights:
-        for r, h in enumerate(row_heights):
-            hwp.set_row_height(r, h)
+    time.sleep(1)  # 표 생성 대기    
     for r, row in enumerate(table_data):
         for c, val in enumerate(row):
+            
             style = cell_styles[r][c] if cell_styles else {}
             bg    = cell_bg_colors[r][c] if cell_bg_colors else None
             align = col_aligns[c] if col_aligns else "left"
@@ -196,7 +164,12 @@ def insert_table_and_style(table_data, cell_styles=None, col_widths=None, row_he
             elif align=="right": hwp.TableCellAlignRightCenter()
             else: hwp.TableCellAlignLeftCenter()
             # 셀 배경색
-            if bg: hwp.set_cell_background_color_hex(r, c, bg)
+            if bg:
+                if bg.startswith('#'):  # hex 형식일 때
+                    red, green, blue = hex_to_rgb(bg)
+                    hwp.gradation_on_cell([(red, green, blue)])
+                else:
+                    hwp.gradation_on_cell([bg])
             # 셀 내용 입력
             hwp.insert_text(str(val))
             if c < cols - 1:
@@ -205,13 +178,32 @@ def insert_table_and_style(table_data, cell_styles=None, col_widths=None, row_he
             hwp.TableLowerCell()
             for _ in range(cols - 1):
                 hwp.TableLeftCell()
-    hwp.TableOutCell()  # 표 외부로 커서 이동
+    hwp.MoveDown()
+
+cell_styles = [
+    [ {"FaceName":"돋움","Height":14,"Bold":True} for _ in range(4) ],
+    [ {"FaceName":"바탕","Height":11,"Bold":False} for _ in range(4) ],
+    [ {"FaceName":"바탕","Height":11,"Bold":False} for _ in range(4) ]
+]
+
+cell_bg_colors = [
+    ["#FFF1AF","#FFF1AF","#FFF1AF","#FFF1AF"],
+    ["#FFF9C5", None,None,None],
+    ["#FFF9C5",None,None,None]
+]
+col_aligns = ["center","center","center","left"]
+
 
 for role in ["title", "receiver", "opening", "body", "table_caption"]:
     insert_role_and_style(role)
 
 
-insert_table_and_style(table_data, styles['header_style'], styles['cell_style']) 
+insert_table_and_style(
+    table_data,
+    cell_styles=cell_styles,
+    cell_bg_colors=cell_bg_colors,
+    col_aligns=col_aligns
+)
 
 
 for role in ["date", "school_name", "principal"]:
