@@ -78,7 +78,7 @@ def insert_role_and_style(hwp, content_dict, styles, role):
 def insert_table_and_style(hwp, table_data, cell_styles=None, cell_bg_colors=None, col_aligns=None):
     rows, cols = len(table_data), len(table_data[0])
     hwp.create_table(rows, cols, treat_as_char=True)
-    time.sleep(1)
+    
     for r_idx, row in enumerate(table_data):
         for c_idx, val in enumerate(row):
             style = cell_styles[r_idx][c_idx] if cell_styles else {}
@@ -109,29 +109,42 @@ def insert_table_and_style(hwp, table_data, cell_styles=None, cell_bg_colors=Non
 
 def generate_hwp_from_spec(spec, filename="output.hwpx"):
     hwp = Hwp()
-    doc = spec["document"]  # 반드시 document root dict
+    doc = spec["document"] if "document" in spec else spec
 
-    # Title
-    if "title" in doc:
-        insert_role_and_style(hwp, {"title": doc["title"]}, TITLE_STYLE, "title")
-    # Recipient
-    if "recipient" in doc:
-        insert_role_and_style(hwp, {"recipient": doc["recipient"]}, RECIPIENT_STYLE, "recipient")
-    # Body
-    if "body" in doc:
-        insert_role_and_style(hwp, {"body": doc["body"]["content"]}, BODY_STYLE, "body")
-    # Table
-    if "table" in doc:
-        table_info = doc["table"]
-        insert_table_and_style(
-            hwp,
-            table_info["data"],
-            cell_styles=table_info.get("cell_styles"),   # style 확장 적용
-            cell_bg_colors=table_info.get("cell_bg_colors"),
-            col_aligns=table_info["style"].get("cell_align"),
-        )
-    # Footer
-    if "footer" in doc:
-        insert_role_and_style(hwp, {"footer": doc["footer"]["content"]}, FOOTER_STYLE, "footer")
+    for key, value in doc.items():
+        # 텍스트/문단류
+        if isinstance(value, str) or (isinstance(value, dict) and "content" in value):
+            # 스타일 추출 - 필요하면 value.get("style") 등
+            text = value if isinstance(value, str) else value["content"]
+            # 기본 스타일 또는 key별 heuristic (원하면 key마다 스타일 분기 가능)
+            style = heuristic_style_for_key(key)
+            insert_role_and_style(hwp, {key: text}, style, key)
+        # 표류
+        elif isinstance(value, dict) and "data" in value:
+            table_style = value.get("style", {})
+            cell_aligns = table_style.get("cell_align")
+            # cell_styles, bg_colors 등 확장
+            insert_table_and_style(
+                hwp,
+                value["data"],
+                cell_styles=None,  # 추가할 부분
+                cell_bg_colors=[[table_style.get("header_bg")]*len(value["data"][0])] + [[None]*len(value["data"][0])]*(len(value["data"])-1),
+                col_aligns=cell_aligns
+            )
+        # 기타(이미지, 구분선, 추가 미래기능)
+        else:
+            pass  # type에 따라 확장 가능
+
     hwp.save_as(filename)
     hwp.quit()
+
+def heuristic_style_for_key(key):
+    # 예시: key가 'title', 'header'면 굵게, 크게 등
+    style_map = {
+        "title": {"FaceName":"돋움", "Height":20, "Bold":True, "Align":"center"},
+        "footer": {"FaceName":"바탕체", "Height":10, "Bold":False, "Align":"center"},
+        "body": {"FaceName":"바탕체", "Height":11, "Bold":False, "Align":"left"},
+        # 기타 key/styles 필요시 계속 추가
+    }
+    # 값 없을 경우 기본값
+    return {key: style_map.get(key, {"FaceName":"바탕체", "Height":11, "Bold":False, "Align":"left"})}
