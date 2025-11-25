@@ -109,23 +109,29 @@ def insert_table_and_style(hwp, table_data, cell_styles=None, cell_bg_colors=Non
 
 def generate_hwp_from_spec(spec, filename="output.hwpx"):
     hwp = Hwp()
-    roles = ["title", "receiver", "opening", "body", "table_caption"]
-    # 문단/역할 입력
-    for role in roles:
-        if role in spec["contents"]:
-            insert_role_and_style(hwp, spec["contents"], spec["styles"], role)
-    # 표
-    if "table" in spec:
+    doc = spec["document"]  # 반드시 document root dict
+
+    # Title
+    if "title" in doc:
+        insert_role_and_style(hwp, {"title": doc["title"]}, TITLE_STYLE, "title")
+    # Recipient
+    if "recipient" in doc:
+        insert_role_and_style(hwp, {"recipient": doc["recipient"]}, RECIPIENT_STYLE, "recipient")
+    # Body
+    if "body" in doc:
+        insert_role_and_style(hwp, {"body": doc["body"]["content"]}, BODY_STYLE, "body")
+    # Table
+    if "table" in doc:
+        table_info = doc["table"]
         insert_table_and_style(
             hwp,
-            spec["table"]["data"],
-            cell_styles=spec["table"].get("cell_styles"),
-            cell_bg_colors=spec["table"].get("cell_bg_colors"),
-            col_aligns=spec["table"].get("col_aligns")
+            table_info["data"],
+            cell_styles=table_info.get("cell_styles"),   # style 확장 적용
+            cell_bg_colors=table_info.get("cell_bg_colors"),
+            col_aligns=table_info["style"].get("cell_align"),
         )
-    # 후반 문단 역할
-    for role in ["date", "school_name", "principal"]:
-        if role in spec["contents"]:
-            insert_role_and_style(hwp, spec["contents"], spec["styles"], role)
+    # Footer
+    if "footer" in doc:
+        insert_role_and_style(hwp, {"footer": doc["footer"]["content"]}, FOOTER_STYLE, "footer")
     hwp.save_as(filename)
     hwp.quit()
