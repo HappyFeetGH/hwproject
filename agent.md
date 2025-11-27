@@ -1,111 +1,187 @@
-## **1. agent.md(LLM용 instruction 문서) 기본 구조 제안**
+# HWP Template Reconstruction Agent Instruction
 
-### **목표 역할**
+## 역할과 목표
 
-- LLM에게 실제 예시(pdf/png 등)나 설명(context)을 보여주면,
-    - (a) 그와 비슷한 문서/표/레이아웃/json/yaml 템플릿을 생성하게 하거나
-    - (b) context(키워드, 규칙, 내용) 입력에 따라 JSON/YAML 명세를 작성함
-    - (c) 최종적으로 md→hwpx 코드에 input만 넘기면 자동 변환이 가능하게 함
+- 이 에이전트는 **기존 HWP 문서(PDF 형태)를 분석해서, doclib.py가 그대로 실행할 수 있는 JSON 또는 YAML 스펙**을 생성한다.
+- 목표는 다음 두 가지를 동시에 만족하는 것이다.
+
+1. **원본 문서와 최대한 비슷한 레이아웃과 스타일(중앙정렬, 폰트, 크기, 표 스타일 등)을 재현**한다.[^1][^2]
+2. 사용자가 제시한 **수정사항(문구 수정, 표 행 추가, 색상/정렬 변경 등)**을 반영한 최종 스펙을 만든다.
+- 이 스펙은 doclib.py에서 `generate_hwp_from_spec(spec, filename)`으로 전달되며, pyhwpx를 통해 HWPX 문서로 변환된다.[^2][^3]
 
 ***
 
-### **agent.md 서술 구조 예시**
+## 출력 형식(스펙 구조)
 
-```markdown
-# LLM Document Agent Instruction
+### 1. 최상위 구조
 
-## 목적 요약  
-- 한글 문서(pdf, png, md 예시)를 최대한 비슷하게 스타일링된 JSON/YAML 템플릿으로 변환  
-- 입력 context에 따라 맞춤 문서/표 구조, 역할, 스타일 정보(json, yaml) 생성  
-- 생성된 명세를 기반으로 라이브러리에 전달하여 실제 HWPX 문서(표 포함)로 자동 생성 수행
+- 항상 아래 형식을 따른다(키 이름은 한국어/영어 등 자유지만 예시는 다음과 같다):
 
-## 요청 예시 및 task 구조
-
-### 1. 이미지(pdf/png) → template json/yaml
-- 첨부된 파일 레이아웃/표/타이틀/폰트/배경색 등 최대한 비슷하게 JSON/YAML template 설계
-  - 예시:
-    ```
-    title_font: "나눔명조"
-    title_size: 18
-    table: 
-      header_bg: "#FFEE99"
-      cell_font: "바탕체"
-      cell_size: 12
-      cell_align: ["center", "left", "right"]
-      data: [["학년", "일자", ...], ...]
-    page_style:
-      margin:[^1]
-    ```
-
-### 2. 템플릿 + 문서 context → doc json/yaml
-- 템플릿 기반, 문서 내용/표 데이터 context(recipient, date, table_rows 등)에 맞춰 전체 문서 YAML 생성  
-  - 예시:
-    ```
-    title: "2025 총괄평가 시행 안내"
-    date: "2025-11-30"
-    recipient: "학부모님"
-    table:
-      data: [["3", "12.1", ...], ...]
-    footer: "문의: ... 연락처"
-    ```
-
-### 3. context → doc json/yaml  
-- 추가적 내용(rule, 키워드, 업무 목적 등) 입력 시 적절한 YAML/JSON 출력  
-  - 예시:
-    ```
-    title: "회의록"
-    table:
-      header_bg: "#AAFFDD"
-      data: [["참석자", "의견", ...], ...]
-    etc: ...
-    ```
-
-## 형식 요구  
-- 모든 출력은 **정형화된 JSON 또는 YAML**  
-- 표, 문단, 타이틀, 스타일(폰트, 색, 정렬, 배경 등)은 전부 명확한 key:value로 명시  
-- 필요시 md 표 구조를 함께 명세로 제공
-
-## output 예시  
-```
-
+```json
 {
-"title": "...",
-"table": {
-"header_bg": "\#FFEE99",
-"cell_bg": [["\#FFEE99", "\#FFEE99", ...], ...],
-"data": [["학년", ...], ...]
-},
-"footer": "..."
+  "document": {
+    "블록1_이름": <문단 또는 표 또는 기타>,
+    "블록2_이름": <문단 또는 표 또는 기타>,
+    ...
+  }
 }
-
 ```
 
----
+- **중요:** doclib는 `document` 내부의 **키 순서대로** 문서를 조립한다.
+    - 따라서 PDF에서 보이는 순서대로 키를 배치해야 한다(예: 제목 → 인사말 → 본문 → 표 → 날짜/발신 → 문의 등).
 
-## **2. LLM + 라이브러리 연동 프로세스 개요**
+***
 
-- agent.md 기반 프롬프트:
-  - 이미지/pdf 예시 → LLM → 템플릿 YAML/JSON 생성
-  - 템플릿+context → LLM → 최종 문서 YAML/JSON 생성
-- 내가 만든 라이브러리의 함수:
-  - `generate_hwp_from_yaml(yaml_spec)`
-  - `generate_hwp_from_json(json_spec)`
-- 실제 파이프라인 예시:
-  1. LLM이 agent.md instruction대로 템플릿+문서\Json 생성
-  2. 라이브러리 함수에 전달
-  3. HWPX 파일 생성 및 저장
+### 2. 문단(Paragraph) 노드 형식
 
----
+문단은 두 가지 형식 중 하나를 사용한다.
 
-## **3. 구현 가능성/요구사항**
+1. **단순 문자열**
 
-- **pdf/png 파일 → 문서 구조 추출:**  
-  - LLM, OCR, Vision API 등과 연동해 구조/스타일/레이아웃 추출해 yaml로 생성 가능
-- **템플릿 기반/Context 기반 생성:**  
-  - 역할, 스타일, 테이블, 폰트 등 json/yaml 형식으로 받으면,  
-    이미 구현된 라이브러리 함수를 통해 hwpx/공문/보고서 등 즉시 자동 생성 가능
+```json
+"제목": "2026학년도 2학기 총괄평가 안내"
+```
 
-- **확장성:**  
-  - 표/문단/스타일/캡션/링크 등 지원 항목을 계속 추가할 수 있음
+2. **내용 + 스타일**
 
----
+```json
+"제목": {
+  "content": "2026학년도 2학기 총괄평가 안내",
+  "style": {
+    "FaceName": "돋움",
+    "Height": 20,
+    "Bold": true,
+    "Align": "center"
+  }
+}
+```
+
+
+- style 필드에서 사용할 수 있는 속성:
+    - `FaceName`: 글꼴 이름 (예: `"돋움"`, `"바탕체"`)
+    - `Height`: 글자 크기(pt 단위 정수)
+    - `Bold`: 굵게 여부 (true/false)
+    - `Align`: `"left"`, `"center"`, `"right"`, `"justify"` 중 하나 (문단 정렬).[^1]
+- 에이전트는 PDF를 보고 **상대적인 크기와 정렬을 추정**해야 한다.
+    - 눈에 띄게 큰 제목 → Height 크게, Align은 보통 `"center"`.
+    - 일반 본문 → Height 중간, Align `"left"`.
+    - 날짜/발신자 → 종종 `"right"` 또는 `"center"`.
+
+```
+문단 내용 안에는 `**굵게**`, `*기울임*`, `<u>밑줄</u>`과 같은 **Markdown 스타일 마크업을 그대로 사용할 수 있다.**  
+```
+
+doclib의 `parse_segments` 함수가 이를 인식하여 부분 볼드/이탤릭을 적용한다.
+
+***
+
+### 3. 표(Table) 노드 형식
+
+표는 반드시 다음과 같은 구조를 따른다.
+
+```json
+"평가_시간표": {
+  "data": [
+    ["학년", "일자", "교시", "과목"],
+    ["3", "12.1(월)", "1-2", "국어"],
+    ["4", "12.2(화)", "1-2", "수학"]
+  ],
+  "style": {
+    "header_bg": "#FFEE99",
+    "cell_font": "바탕체",
+    "cell_size": 11,
+    "cell_align": ["center", "center", "center", "left"],
+    "cell_bg_colors": [
+      ["#FFEE99", "#FFEE99", "#FFEE99", "#FFEE99"],
+      ["#FFF9C5", null, null, null],
+      ["#FFF9C5", null, null, null]
+    ]
+  }
+}
+```
+
+- `data`: 2차원 배열. 첫 행은 헤더일 수 있음.
+- `style` 필드:
+    - `header_bg`: 헤더 라인의 기본 배경색(옵션).
+    - `cell_font`: 모든 셀에 적용할 기본 글꼴.
+    - `cell_size`: 모든 셀에 적용할 기본 글자 크기.
+    - `cell_align`: 각 열의 정렬(문자열 `"left"`, `"center"`, `"right"`). 표 생성 시 셀 정렬에 사용된다.[^2]
+    - `cell_bg_colors`: 선택사항. 각 셀별 배경색을 2차원 배열로 지정한다.
+        - **모든 색상은 반드시 `"#RRGGBB"` 형식**으로 표기해야 한다. 예: `"#FFF1AF"`, `"#FFF9C5"`.
+        - 색상이 없는 셀은 `null` 또는 `""`를 사용한다.
+- 내부 구현:
+    - 표는 pyhwpx의 create_table로 생성되며, 각 셀에 대해 `set_font`, 정렬, `gradation_on_cell` 등을 호출해 배경색을 적용한다.[^3][^2]
+
+***
+
+### 4. 색상 규칙(필수)
+
+- 모든 색상은 **반드시 Hex 문자열 `"#RRGGBB"` 형식**을 사용한다.
+    - 예: `"#FFEE99"`, `"#FFF1AF"`, `"#FFFFFF"`.
+    - 색상명 `"Yellow"`나 `"Red"` 등은 사용하지 않는다.
+- 라이브러리는 이 값을 `hex_to_rgb("#RRGGBB")`로 변환해 pyhwpx의 `RGBColor` 기반 함수에서 사용한다.[^3]
+
+***
+
+## PDF 분석 시 스타일 추론 가이드
+
+에이전트는 PDF를 보고 다음을 반드시 고려한다.
+
+1. **폰트/크기 계층**
+    - 가장 큰 텍스트(문서 제목) → `Height` 가장 크게, `Bold: true`, `Align: "center"`.
+    - 섹션 제목/소제목 → 제목보다 작은 `Height`, 경우에 따라 `Bold: true`, `Align`은 `"left"` 또는 `"center"`.
+    - 본문 → 적당한 `Height`, 보통 `Align: "left"`.
+    - 날짜/발신자/문의 등 끝부분 → 종종 `"right"` 또는 `"center"`.
+2. **정렬**
+    - PDF에서 좌우 여백 기준으로 중앙에 위치한 텍스트는 `"center"`.
+    - 왼쪽 정렬로 보이면 `"left"`, 오른쪽 붙은 텍스트는 `"right"`.
+3. **표 스타일**
+    - 헤더 행의 배경색, 굵기 여부를 눈으로 보고 header_bg, cell_bg_colors, Bold 여부를 결정한다.
+    - 숫자/시간/점수 열은 `"center"` 또는 `"right"` 정렬, 긴 설명 열은 `"left"` 정렬이 일반적이므로 이를 반영한다.[^2]
+
+***
+
+## 출력 예시(통합)
+
+최종적으로 생성해야 할 JSON 예시는 다음과 같다.
+
+```json
+{
+  "document": {
+    "제목": {
+      "content": "2026학년도 2학기 총괄평가 안내",
+      "style": { "FaceName": "돋움", "Height": 20, "Bold": true, "Align": "center" }
+    },
+    "인사말": {
+      "content": "학부모님 안녕하십니까?\n아래와 같이 총괄평가를 실시합니다.",
+      "style": { "FaceName": "바탕체", "Height": 11, "Bold": false, "Align": "left" }
+    },
+    "평가_시간표": {
+      "data": [
+        ["학년", "일자", "교시", "과목"],
+        ["3", "12.1(월)", "1-2", "국어"],
+        ["4", "12.2(화)", "1-2", "수학"]
+      ],
+      "style": {
+        "header_bg": "#FFEE99",
+        "cell_font": "바탕체",
+        "cell_size": 11,
+        "cell_align": ["center", "center", "center", "left"],
+        "cell_bg_colors": [
+          ["#FFEE99", "#FFEE99", "#FFEE99", "#FFEE99"],
+          ["#FFF9C5", null, null, null],
+          ["#FFF9C5", null, null, null]
+        ]
+      }
+    },
+    "날짜": {
+      "content": "2026년 11월 18일",
+      "style": { "FaceName": "바탕체", "Height": 11, "Bold": false, "Align": "right" }
+    },
+    "발신": {
+      "content": "한솔초등학교장",
+      "style": { "FaceName": "바탕체", "Height": 11, "Bold": true, "Align": "right" }
+    }
+  }
+}
+```
