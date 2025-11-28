@@ -1,0 +1,311 @@
+{
+  "document": {
+    "표1": {
+      "data": [
+        [
+          ""
+        ]
+      ],
+      "style": {
+        "cell_font": "바탕체",
+        "cell_size": 11,
+        "cell_align": [
+          "left"
+        ]
+      }
+    },
+    "문단1": {
+      "content": "2025학년도 학생평가 운영계획",
+      "style": {
+        "FaceName": "HY헤드라인M",
+        "Height": 20.0,
+        "Bold": false,
+        "Align": "center"
+      },
+      "segments": [
+        {
+          "text": "2025학년도 학생평가 운영계획",
+          "style": {
+            "Align": "center",
+            "FaceName": "HY헤드라인M",
+            "Height": 20.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "표2": {
+      "data": [
+        [
+          ""
+        ]
+      ],
+      "style": {
+        "cell_font": "바탕체",
+        "cell_size": 11,
+        "cell_align": [
+          "left"
+        ]
+      }
+    },
+    "문단2": {
+      "content": "한솔초등학교",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 12.0,
+        "Bold": false,
+        "Align": "right"
+      },
+      "segments": [
+        {
+          "text": "한솔초등학교",
+          "style": {
+            "Align": "right",
+            "FaceName": "함초롬바탕",
+            "Height": 12.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단3": {
+      "content": "1) 평가 목적 : 학생 개인의 성취수준에 맞는 개인별 맞춤형 학습 지원",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "1) 평가 목적 : 학생 개인의 성취수준에 맞는 개인별 맞춤형 학습 지원 ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단4": {
+      "content": "- 기초학력과 창의력, 문제해결력 등 핵심역량 신장",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "- 기초학력과 창의력, ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        },
+        {
+          "text": "문제해결력 등 ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": true
+          }
+        },
+        {
+          "text": "핵심역량 신장",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단5": {
+      "content": "- 교과 핵심 개념 및 성취 기준 보장",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "- 교과 핵심 개념 및 성취 기준 보장",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단6": {
+      "content": "- 과정 중심의 다양한 평가로 학생의 배움과 성장 지원 및 삶의 역량 계발",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "- 과정 중심의 다양한 평가로 학생의 배움과 성장 지원 및 삶의 역량 계발",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단7": {
+      "content": "- 미래핵심역량 계발",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "- 미래핵심역량 계발",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단8": {
+      "content": "2) 평가의 방향",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "2) 평가의 방향 ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단9": {
+      "content": "학생 개개인의 교육 목표 도달을 진단하고 학생 맞춤형 학습 지원을 강화를 방향으로 합리적인 평가 방법 및 도구를 개발하여 학생의 교과 활동에 대한 학업 성취도 확인 및 수업 개선 자료로 활용한다.",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": " ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        },
+        {
+          "text": "학생 개개인의 교육 목표 도달을 진단하고 학생 맞춤형 학습 지원을 강화를 방향으로 ",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 20.0,
+            "Bold": false
+          }
+        },
+        {
+          "text": "합리적인 평가 방법 및 도구를 개발하여 학생의 교과 활동에 대한 학업 성취도 확인 및 수업 개선 자료로 활용한다.",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "문단10": {
+      "content": "1) 평가 절차",
+      "style": {
+        "FaceName": "함초롬바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      },
+      "segments": [
+        {
+          "text": "1) 평가 절차",
+          "style": {
+            "Align": "justify",
+            "FaceName": "함초롬바탕",
+            "Height": 11.0,
+            "Bold": false
+          }
+        }
+      ]
+    },
+    "표3": {
+      "data": [
+        [
+          "순",
+          "평가 절차",
+          "시기",
+          "관련 교육 활동 내용",
+          "비고"
+        ],
+        [
+          "1",
+          "학년별 교수·학습 및 평가 계획 수립",
+          "학기초",
+          "학년별 자체 교수·학습 및 평가 계획 수립 (교사별 평가, 정의적 영역 평가, 논술형 평가 포함)",
+          ""
+        ],
+        [
+          "2",
+          "평가 실시",
+          "연중",
+          "정기적인 학업성취도 진단을 기반으로 한 배움 중심 학습 과정 평가",
+          "상시"
+        ],
+        [
+          "3",
+          "평가 결과 분석 활용",
+          "연중",
+          "다음 학습 환류 총괄 평가 결과 학생 개별 통지, 학년별 특성에 맞춘 학년별 평가결과 가정 통지",
+          ""
+        ]
+      ],
+      "style": {
+        "cell_font": "바탕체",
+        "cell_size": 11,
+        "cell_align": [
+          "left",
+          "left",
+          "left",
+          "left",
+          "left"
+        ]
+      }
+    }
+  }
+}
