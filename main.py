@@ -1,7 +1,7 @@
 import sys
 import json
 import yaml
-from doclib import generate_hwp_from_spec
+from doclib import generate_hwp_from_spec, generate_hwp_from_parsed_spec
 
 def load_spec(path):
     if path.endswith('.json'):
@@ -15,13 +15,17 @@ def load_spec(path):
 
 def main():
     if len(sys.argv) < 2:
-        print("사용법: python main.py [spec.json 또는 spec.yaml]")
+        print("사용법: python main.py parsed_spec.json [output.hwpx]")
         sys.exit(1)
-    spec_file = sys.argv[1]
-    spec = load_spec(spec_file)
-    filename = spec.get("output", "output.hwpx")
-    generate_hwp_from_spec(spec, filename=filename)
-    print(f"HWPX 생성 완료: {filename}")
 
-if __name__ == '__main__':
+    spec_path = sys.argv[1]
+    output = sys.argv[2] if len(sys.argv) >= 3 else "output.hwpx"
+
+    with open(spec_path, encoding="utf-8") as f:
+        spec = json.load(f)
+
+    generate_hwp_from_parsed_spec(spec, filename=output)
+    print(f"완료: {output}")
+
+if __name__ == "__main__":
     main()

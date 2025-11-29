@@ -196,7 +196,7 @@ def extract_text_runs(p_el: ET.Element):
             parts.append(t.text)
     return "".join(parts).strip()
 
-def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes):
+def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, border_fills):
     blocks = []
     section_files = sorted(
         [n for n in zf.namelist()
@@ -217,24 +217,57 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes):
 
             if tag == f"{HP}tbl":
                 data = []
+                cell_styles = []
+                cell_segments = []
+                cell_merges = []   # colSpan/rowSpan/bgColor/size
+
                 for tr in node.findall("hp:tr", NS):
-                    row = []
+                    row_texts = []
+                    row_styles = []
+                    row_seglist = []
+                    row_merge = []
+
                     for tc in tr.findall("hp:tc", NS):
-                        cell_text = []
-                        # 수정: findall 대신 .//로 descendant 전체 검색 [web:150]
+                        # 병합/배경/크기 정보
+                        col_span, row_span, bg_color, w, h = parse_tc_props(tc, border_fills)
+
+                        cell_text_chunks = []
+                        segs_merged = []
+                        cell_style = None
+
                         for p in tc.findall(".//hp:p", NS):
                             segs = paragraph_to_segments(p, para_shapes, char_shapes)
-                            txt = "".join(s["text"] for s in segs).strip()
-                            if txt:
-                                cell_text.append(txt)
-                        row.append(" ".join(cell_text))
-                    if row:
-                        data.append(row)
+                            if segs:
+                                cell_text_chunks.append("".join(s["text"] for s in segs))
+                                if cell_style is None:
+                                    cell_style = segs[0]["style"].copy()
+                                segs_merged.extend(segs)
+
+                        row_texts.append(" ".join([t for t in cell_text_chunks if t]))
+                        row_styles.append(cell_style or {})
+                        row_seglist.append(segs_merged)
+                        row_merge.append({
+                            "colSpan": col_span,
+                            "rowSpan": row_span,
+                            "bgColor": bg_color,
+                            "width": w,
+                            "height": h
+                        })
+
+                    if row_texts:
+                        data.append(row_texts)
+                        cell_styles.append(row_styles)
+                        cell_segments.append(row_seglist)
+                        cell_merges.append(row_merge)
+
                 if data:
                     blocks.append({
                         "type": "table",
                         "data": data,
-                        "style": {}
+                        "style": {},
+                        "cell_styles": cell_styles,
+                        "cell_segments": cell_segments,
+                        "cell_merges": cell_merges
                     })
                 return
 
@@ -256,6 +289,106 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes):
     return blocks
 
 
+def parse_table_styles_from_header(zf: zipfile.ZipFile):
+    border_fills = {}
+    with zf.open("Contents/header.xml") as f:
+        tree = ET.parse(f)
+    root = tree.getroot()
+    ref_list = root.find("hh:refList", NS)
+    if ref_list is None:
+        return border_fills
+
+    bf_parent = ref_list.find("hh:borderFills", NS)
+    if bf_parent is None:
+        return border_fills
+
+    for bf in bf_parent.findall("hh:borderFill", NS):
+        bid = bf.get("id")
+        if not bid or not bid.isdigit():
+            continue
+        bid = int(bid)
+
+        color = pick_fill_color_from_borderfill(bf)
+        border_fills[bid] = {"fillColor": color}
+    return border_fills
+
+
+
+def parse_tc_props(tc, border_fills):
+    col_span = 1
+    row_span = 1
+    bg_color = None
+    width = height = None
+
+    bf_ref = tc.get("borderFillIDRef")
+    if bf_ref and bf_ref.isdigit():
+        bf = border_fills.get(int(bf_ref), {})
+        bg_color = bf.get("fillColor")
+
+    cell_span_el = tc.find("hp:cellSpan", NS)
+    if cell_span_el is not None:
+        col_attr = cell_span_el.get("colSpan")
+        row_attr = cell_span_el.get("rowSpan")
+        if col_attr and col_attr.isdigit():
+            col_span = int(col_attr)
+        if row_attr and row_attr.isdigit():
+            row_span = int(row_attr)
+
+    cell_sz_el = tc.find("hp:cellSz", NS)
+    if cell_sz_el is not None:
+        w = cell_sz_el.get("width")
+        h = cell_sz_el.get("height")
+        width = int(w) if w and w.isdigit() else None
+        height = int(h) if h and h.isdigit() else None
+
+    return col_span, row_span, bg_color, width, height
+
+
+def pick_fill_color_from_borderfill(bf_el: ET.Element) -> str | None:
+    """
+    <borderFill> 요소 하나에서 '배경색'으로 쓸 #RRGGBB를 한 개 골라낸다.
+    - 우선순위:
+      1) winBrush.faceColor (none이 아닌 경우)
+      2) gradation.color/@value 첫 번째
+      3) winBrush.hatchColor
+    - 모두 없으면 None.
+    """
+    # ns1: (core 네임스페이스) 접두사까지 포함 가능성 감안해서 로컬 태그/속성이름으로 처리
+    # 1) winBrush.faceColor
+    for el in bf_el.iter():
+        lname = el.tag.split('}')[-1]
+        if lname == "winBrush":
+            face = el.attrib.get("faceColor")
+            if face and face.lower() != "none":
+                return normalize_color(face)
+    # 2) gradation.color/@value
+    for el in bf_el.iter():
+        lname = el.tag.split('}')[-1]
+        if lname == "color":
+            val = el.attrib.get("value")
+            if val:
+                return normalize_color(val)
+    # 3) winBrush.hatchColor (백색이 아닌 경우에 한해)
+    for el in bf_el.iter():
+        lname = el.tag.split('}')[-1]
+        if lname == "winBrush":
+            hatch = el.attrib.get("hatchColor")
+            if hatch:
+                return normalize_color(hatch)
+    return None
+
+def normalize_color(val: str) -> str:
+    """
+    '#RRGGBB' 또는 '#AARRGGBB' 형식 등을 '#RRGGBB'로 정규화.
+    """
+    if not val.startswith("#"):
+        return None
+    if len(val) == 7:
+        return val
+    if len(val) == 9:  # #AARRGGBB → 뒤 6자리만 사용
+        return "#" + val[-6:]
+    # 그 외 포맷은 일단 무시
+    return None
 
 
 # 3) blocks -> doclib용 document spec 변환 ----------------------------------
@@ -267,17 +400,16 @@ def blocks_to_document_spec(blocks):
     for b in blocks:
         if b["type"] == "paragraph":
             key = f"문단{p_idx}"
-            # 대표 스타일은 첫 segment 기준으로 뽑되, segments는 그대로 모두 넘긴다
-            base_style = b["segments"][0]["style"].copy() if b["segments"] else {}
+            base = b["segments"][0]["style"].copy() if b.get("segments") else {}
             doc[key] = {
                 "content": b["content"],
                 "style": {
-                    "FaceName": base_style.get("FaceName", "바탕체"),
-                    "Height": base_style.get("Height", 11),
-                    "Bold": base_style.get("Bold", False),
-                    "Align": base_style.get("Align", "left")
+                    "FaceName": base.get("FaceName", "바탕체"),
+                    "Height": base.get("Height", 11),
+                    "Bold": base.get("Bold", False),
+                    "Align": base.get("Align", "left")
                 },
-                "segments": b["segments"]
+                "segments": b.get("segments", [])
             }
             p_idx += 1
 
@@ -290,11 +422,15 @@ def blocks_to_document_spec(blocks):
                     "cell_font": "바탕체",
                     "cell_size": 11,
                     "cell_align": ["left"] * cols
-                }
+                },
+                "cell_styles": b.get("cell_styles"),
+                "cell_segments": b.get("cell_segments"),
+                "cell_merges": b.get("cell_merges")
             }
             t_idx += 1
 
     return {"document": doc}
+
 
 def debug_dump_styles(para_shapes, char_shapes, limit=10):
     print("=== ParaShapes (문단 스타일) ===")
@@ -312,6 +448,69 @@ def debug_dump_styles(para_shapes, char_shapes, limit=10):
         print(f"  id={cid} -> {cs}")
 
 
+def debug_tcpr_structure(zf, section_name="Contents/section0.xml"):
+    with zf.open(section_name) as f:
+        tree = ET.parse(f)
+    root = tree.getroot()
+
+    tbl = root.find(".//hp:tbl", NS)
+    if tbl is None:
+        print("No <hp:tbl> found")
+        return
+
+    first_tcpr = tbl.find(".//hp:tcPr", NS)
+    if first_tcpr is None:
+        print("No <hp:tcPr> found")
+        return
+
+    print("=== Raw <hp:tcPr> XML ===")
+    print(ET.tostring(first_tcpr, encoding="unicode"))
+
+
+def debug_tc_structure(zf, section_name="Contents/section0.xml"):
+    with zf.open(section_name) as f:
+        tree = ET.parse(f)
+    root = tree.getroot()
+
+    tbl = root.find(".//hp:tbl", NS)
+    if tbl is None:
+        print("No <hp:tbl> found")
+        return
+
+    first_tc = tbl.find(".//hp:tc", NS)
+    if first_tc is None:
+        print("No <hp:tc> found")
+        return
+
+    print("=== Raw <hp:tc> XML ===")
+    print(ET.tostring(first_tc, encoding="unicode"))
+
+    print("\n=== attributes of <hp:tc> ===")
+    print(first_tc.attrib)
+
+    print("\n=== direct children tags of <hp:tc> ===")
+    for child in list(first_tc):
+        print("  child tag:", child.tag, "attrib:", child.attrib)
+
+def debug_borderfill(zf, bid):
+    with zf.open("Contents/header.xml") as f:
+        tree = ET.parse(f)
+    root = tree.getroot()
+    ref_list = root.find("hh:refList", NS)
+    if ref_list is None:
+        print("no refList")
+        return
+    bf_parent = ref_list.find("hh:borderFills", NS)
+    if bf_parent is None:
+        print("no borderFills")
+        return
+
+    for bf in bf_parent.findall("hh:borderFill", NS):
+        if bf.get("id") == str(bid):
+            print(f"=== <borderFill id=\"{bid}\"> raw XML ===")
+            print(ET.tostring(bf, encoding="unicode"))
+            break
+
 
 # 4) 전체 파이프라인 ----------------------------------------------------------
 
@@ -319,7 +518,9 @@ def parse_hwpx_to_spec(hwpx_path: str, out_json_path: str = "parsed_spec.json"):
     with zipfile.ZipFile(hwpx_path, "r") as zf:
         para_shapes, char_shapes = parse_styles_from_header(zf)
         #debug_dump_styles(para_shapes, char_shapes)
-        blocks = parse_sections_to_blocks(zf, para_shapes, char_shapes)
+        #debug_tc_structure(zf)        
+        border_fills = parse_table_styles_from_header(zf)
+        blocks = parse_sections_to_blocks(zf, para_shapes, char_shapes, border_fills)
     spec = blocks_to_document_spec(blocks)
     with open(out_json_path, "w", encoding="utf-8") as f:
         json.dump(spec, f, ensure_ascii=False, indent=2)

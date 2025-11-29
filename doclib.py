@@ -75,37 +75,110 @@ def insert_role_and_style(hwp, content_dict, styles, role):
         hwp.set_font(**base_opts)
     hwp.insert_text("\r\n")
 
-def insert_table_and_style(hwp, table_data, cell_styles=None, cell_bg_colors=None, col_aligns=None):
+def insert_table_and_style(
+    hwp,
+    table_data,
+    cell_styles=None,        # [r][c] 기본 폰트/크기/Bold 등
+    cell_bg_colors=None,     # [r][c] "#RRGGBB" 또는 None (옵션)
+    col_aligns=None,         # [c] "left"/"center"/"right"
+    cell_segments=None,      # [r][c] -> [{"text","style"}, ...]
+    cell_merges=None         # [r][c] -> {"colSpan","rowSpan","bgColor","width","height"}
+):
     rows, cols = len(table_data), len(table_data[0])
     hwp.create_table(rows, cols, treat_as_char=True)
-    
+
     for r_idx, row in enumerate(table_data):
         for c_idx, val in enumerate(row):
-            style = cell_styles[r_idx][c_idx] if cell_styles else {}
-            bg    = cell_bg_colors[r_idx][c_idx] if cell_bg_colors else None
+            base_style = cell_styles[r_idx][c_idx] if cell_styles else {}
+            merge_info = cell_merges[r_idx][c_idx] if cell_merges else {}
+            segs = cell_segments[r_idx][c_idx] if (cell_segments and cell_segments[r_idx][c_idx]) else None
+
+            # 1) 정렬
             align = col_aligns[c_idx] if col_aligns else "left"
-            hwp.set_font(
-                FaceName=style.get("FaceName", "바탕체"),
-                Height=style.get("Height", 11),
-                Bold=style.get("Bold", False)
-            )
-            if align=="center": hwp.TableCellAlignCenterCenter()
-            elif align=="right": hwp.TableCellAlignRightCenter()
-            else: hwp.TableCellAlignLeftCenter()
+            if align == "center":
+                hwp.TableCellAlignCenterCenter()
+            elif align == "right":
+                hwp.TableCellAlignRightCenter()
+            else:
+                hwp.TableCellAlignLeftCenter()
+
+            # 2) 배경색: cell_bg_colors보다 parser에서 온 bgColor 우선
+            bg = merge_info.get("bgColor")
+            if bg is None and cell_bg_colors:
+                bg = cell_bg_colors[r_idx][c_idx]
             if bg:
-                if isinstance(bg, str) and bg.startswith('#'):
+                if isinstance(bg, str) and bg.startswith("#"):
                     red, green, blue = hex_to_rgb(bg)
-                    hwp.gradation_on_cell([(red, green, blue)])
+                    hwp.gradation_on_cell([(red, green, blue)])  # [web:281]
                 else:
                     hwp.gradation_on_cell([bg])
-            hwp.insert_text(str(val))
+
+            # 3) 셀 크기: parser에서 받은 width/height(HwpUnit 기준)를 훅으로 전달
+            cell_w = merge_info.get("width")
+            cell_h = merge_info.get("height")
+            if cell_w or cell_h:
+                set_current_cell_size(hwp, cell_w, cell_h)   # 아래 helper에서 구현 훅
+
+            # 4) 셀 내용: segment 단위 스타일 적용
+            if segs:
+                for seg in segs:
+                    s = seg.get("style", {})
+                    # segment style = 기본 셀 스타일 + run 스타일 override
+                    font_opts = {
+                        "FaceName": s.get("FaceName", base_style.get("FaceName", "바탕체")),
+                        "Height":  s.get("Height",  base_style.get("Height", 11)),
+                        "Bold":    s.get("Bold",    base_style.get("Bold", False)),
+                    }
+                    hwp.set_font(**font_opts)
+                    hwp.insert_text(seg.get("text", ""))
+            else:
+                # segment 정보가 없으면 기존처럼 한 번에 입력
+                hwp.set_font(
+                    FaceName=base_style.get("FaceName", "바탕체"),
+                    Height=base_style.get("Height", 11),
+                    Bold=base_style.get("Bold", False)
+                )
+                hwp.insert_text(str(val))
+
+            # 5) 다음 셀로 이동
             if c_idx < cols - 1:
                 hwp.TableRightCell()
+
         if r_idx < rows - 1:
             hwp.TableLowerCell()
             for _ in range(cols - 1):
                 hwp.TableLeftCell()
+
     hwp.MoveDown()
+
+
+def set_current_cell_size(hwp, width_hu=None, height_hu=None):
+    """
+    현재 커서가 위치한 셀의 크기를 HwpUnit 기준으로 맞추는 훅.
+    width_hu, height_hu 는 hwpx parser에서 뽑은 cellSz width/height (HwpUnit).
+    둘 중 None 인 값은 변경하지 않는다.
+    """
+    if width_hu is None and height_hu is None:
+        return
+
+    act = hwp.hwp.CreateAction("TablePropertyDialog")
+    pset = act.CreateSet()
+    cell_set = pset.CreateItemSet("ShapeTableCell", "Cell")
+
+    # 현재 셀의 기본값 로드
+    act.GetDefault(pset)
+
+    if width_hu is not None:
+        cell_set.SetItem("Width", width_hu)   # 이미 HwpUnit이면 그대로
+    if height_hu is not None:
+        cell_set.SetItem("Height", height_hu)
+
+    try:
+        act.Execute(pset)
+    except Exception:
+        # 셀 크기 변경 실패시 조용히 패스
+        pass
+
 
 def generate_hwp_from_spec(spec, filename="output.hwpx"):
     hwp = Hwp()
@@ -148,3 +221,75 @@ def heuristic_style_for_key(key):
     }
     # 값 없을 경우 기본값
     return {key: style_map.get(key, {"FaceName":"바탕체", "Height":11, "Bold":False, "Align":"left"})}
+
+
+from pyhwpx import Hwp
+
+def insert_paragraph_from_node(hwp, node):
+    """
+    node: {"content": str, "style": {...}, "segments": [...]}
+    segments가 있으면 segment 스타일 기준으로, 없으면 style 하나만으로 출력.
+    """
+    content = node.get("content", "")
+    segments = node.get("segments") or []
+
+    # segments가 있으면 run 단위로 적용
+    if segments:
+        for seg in segments:
+            s_style = seg.get("style", {})
+            hwp.set_font(
+                FaceName=s_style.get("FaceName", node["style"].get("FaceName", "바탕체")),
+                Height=s_style.get("Height",  node["style"].get("Height", 11)),
+                Bold=s_style.get("Bold",      node["style"].get("Bold", False))
+            )
+            hwp.insert_text(seg.get("text", ""))
+    else:
+        base = node.get("style", {})
+        hwp.set_font(
+            FaceName=base.get("FaceName", "바탕체"),
+            Height=base.get("Height", 11),
+            Bold=base.get("Bold", False)
+        )
+        hwp.insert_text(content)
+
+    # 문단 정렬
+    align = node.get("style", {}).get("Align", "left")
+    if align == "center":
+        hwp.ParagraphShapeAlignCenter()
+    elif align == "right":
+        hwp.ParagraphShapeAlignRight()
+    elif align == "justify":
+        hwp.ParagraphShapeAlignJustify()
+    else:
+        hwp.ParagraphShapeAlignLeft()
+
+    hwp.insert_text("\r\n")
+
+
+def generate_hwp_from_parsed_spec(spec, filename="output.hwpx"):
+    """
+    spec: parsed_spec.json을 그대로 로드한 dict
+    document 안의 항목을 '순서대로' 읽어서 문단/표를 생성한다.
+    """
+    hwp = Hwp()
+    doc = spec["document"]
+
+    for key, node in doc.items():
+        # 표 노드: data가 있고 list면 table
+        if isinstance(node, dict) and isinstance(node.get("data"), list):
+            insert_table_and_style(
+                hwp,
+                node["data"],
+                cell_styles=node.get("cell_styles"),
+                cell_bg_colors=None,                 # 필요시 추가
+                col_aligns=None,                     # 필요시 style에서 파생
+                cell_segments=node.get("cell_segments"),
+                cell_merges=node.get("cell_merges"),
+            )
+        # 문단 노드
+        elif isinstance(node, dict) and ("content" in node or "segments" in node):
+            insert_paragraph_from_node(hwp, node)
+        # 그 외 타입(미래 확장)은 일단 스킵 혹은 로그
+
+    hwp.save_as(filename)
+    hwp.quit()
