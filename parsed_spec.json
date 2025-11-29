@@ -33,6 +33,11 @@
             "height": 665
           }
         ]
+      ],
+      "cell_nested": [
+        [
+          []
+        ]
       ]
     },
     "문단1": {
@@ -87,6 +92,11 @@
             "width": 47058,
             "height": 665
           }
+        ]
+      ],
+      "cell_nested": [
+        [
+          []
         ]
       ]
     },
@@ -854,6 +864,36 @@
             "height": 4731
           }
         ]
+      ],
+      "cell_nested": [
+        [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          []
+        ],
+        [
+          [],
+          [],
+          [],
+          [],
+          []
+        ]
       ]
     },
     "문단11": {
@@ -879,7 +919,7 @@
     "표4": {
       "data": [
         [
-          "표 안에도 표가 있어용 진짜 에요 ㅋㅁㄴㅇㄹㅁㄴㅇㄹ ㅎㅎㅎ"
+          "표 안에도 표가 있어용"
         ]
       ],
       "style": {
@@ -910,51 +950,6 @@
                 "Height": 10.0,
                 "Bold": false
               }
-            },
-            {
-              "text": "진짜",
-              "style": {
-                "Align": "justify",
-                "FaceName": "바탕",
-                "Height": 11.0,
-                "Bold": false
-              }
-            },
-            {
-              "text": "에요",
-              "style": {
-                "Align": "justify",
-                "FaceName": "HY헤드라인M",
-                "Height": 10.0,
-                "Bold": true
-              }
-            },
-            {
-              "text": "ㅋㅁㄴㅇㄹ",
-              "style": {
-                "Align": "justify",
-                "FaceName": "바탕",
-                "Height": 10.0,
-                "Bold": true
-              }
-            },
-            {
-              "text": "ㅁㄴㅇㄹ",
-              "style": {
-                "Align": "justify",
-                "FaceName": "바탕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            },
-            {
-              "text": "ㅎㅎㅎ",
-              "style": {
-                "Align": "justify",
-                "FaceName": "바탕",
-                "Height": 10.0,
-                "Bold": false
-              }
             }
           ]
         ]
@@ -968,6 +963,148 @@
             "width": 47624,
             "height": 18828
           }
+        ]
+      ],
+      "cell_nested": [
+        [
+          [
+            {
+              "type": "table",
+              "data": [
+                [
+                  "진짜",
+                  "에요"
+                ],
+                [
+                  "ㅋㅁㄴㅇㄹㅁㄴㅇㄹ",
+                  "ㅎㅎㅎ"
+                ]
+              ],
+              "cell_styles": [
+                [
+                  {
+                    "Align": "justify",
+                    "FaceName": "바탕",
+                    "Height": 11.0,
+                    "Bold": false
+                  },
+                  {
+                    "Align": "justify",
+                    "FaceName": "HY헤드라인M",
+                    "Height": 10.0,
+                    "Bold": true
+                  }
+                ],
+                [
+                  {
+                    "Align": "justify",
+                    "FaceName": "바탕",
+                    "Height": 10.0,
+                    "Bold": true
+                  },
+                  {
+                    "Align": "justify",
+                    "FaceName": "바탕",
+                    "Height": 10.0,
+                    "Bold": false
+                  }
+                ]
+              ],
+              "cell_segments": [
+                [
+                  [
+                    {
+                      "text": "진짜",
+                      "style": {
+                        "Align": "justify",
+                        "FaceName": "바탕",
+                        "Height": 11.0,
+                        "Bold": false
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      "text": "에요",
+                      "style": {
+                        "Align": "justify",
+                        "FaceName": "HY헤드라인M",
+                        "Height": 10.0,
+                        "Bold": true
+                      }
+                    }
+                  ]
+                ],
+                [
+                  [
+                    {
+                      "text": "ㅋㅁㄴㅇㄹ",
+                      "style": {
+                        "Align": "justify",
+                        "FaceName": "바탕",
+                        "Height": 10.0,
+                        "Bold": true
+                      }
+                    },
+                    {
+                      "text": "ㅁㄴㅇㄹ",
+                      "style": {
+                        "Align": "justify",
+                        "FaceName": "바탕",
+                        "Height": 10.0,
+                        "Bold": false
+                      }
+                    }
+                  ],
+                  [
+                    {
+                      "text": "ㅎㅎㅎ",
+                      "style": {
+                        "Align": "justify",
+                        "FaceName": "바탕",
+                        "Height": 10.0,
+                        "Bold": false
+                      }
+                    }
+                  ]
+                ]
+              ],
+              "cell_merges": [
+                [
+                  {
+                    "colSpan": 1,
+                    "rowSpan": 1,
+                    "bgColor": null,
+                    "width": 23019,
+                    "height": 282
+                  },
+                  {
+                    "colSpan": 1,
+                    "rowSpan": 1,
+                    "bgColor": null,
+                    "width": 23019,
+                    "height": 282
+                  }
+                ],
+                [
+                  {
+                    "colSpan": 1,
+                    "rowSpan": 1,
+                    "bgColor": null,
+                    "width": 23019,
+                    "height": 282
+                  },
+                  {
+                    "colSpan": 1,
+                    "rowSpan": 1,
+                    "bgColor": null,
+                    "width": 23019,
+                    "height": 282
+                  }
+                ]
+              ]
+            }
+          ]
         ]
       ]
     }

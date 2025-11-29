@@ -196,7 +196,7 @@ def extract_text_runs(p_el: ET.Element):
             parts.append(t.text)
     return "".join(parts).strip()
 
-def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, border_fills):
+def parse_sections_to_blocks(zf, para_shapes, char_shapes, border_fills):
     blocks = []
     section_files = sorted(
         [n for n in zf.namelist()
@@ -219,46 +219,40 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, bord
                 data = []
                 cell_styles = []
                 cell_segments = []
-                cell_merges = []   # colSpan/rowSpan/bgColor/size
+                cell_merges = []
+                cell_nested = []  # ← 새로 추가
 
                 for tr in node.findall("hp:tr", NS):
                     row_texts = []
                     row_styles = []
                     row_seglist = []
                     row_merge = []
+                    row_nested = []
 
                     for tc in tr.findall("hp:tc", NS):
-                        # 병합/배경/크기 정보
                         col_span, row_span, bg_color, w, h = parse_tc_props(tc, border_fills)
+                        cell_text, cell_style, segs_merged, nested_tables = parse_tc_contents(
+                            tc, para_shapes, char_shapes, border_fills
+                        )
 
-                        cell_text_chunks = []
-                        segs_merged = []
-                        cell_style = None
-
-                        for p in tc.findall(".//hp:p", NS):
-                            segs = paragraph_to_segments(p, para_shapes, char_shapes)
-                            if segs:
-                                cell_text_chunks.append("".join(s["text"] for s in segs))
-                                if cell_style is None:
-                                    cell_style = segs[0]["style"].copy()
-                                segs_merged.extend(segs)
-
-                        row_texts.append(" ".join([t for t in cell_text_chunks if t]))
-                        row_styles.append(cell_style or {})
+                        row_texts.append(cell_text)
+                        row_styles.append(cell_style)
                         row_seglist.append(segs_merged)
                         row_merge.append({
                             "colSpan": col_span,
                             "rowSpan": row_span,
                             "bgColor": bg_color,
                             "width": w,
-                            "height": h
+                            "height": h,
                         })
+                        row_nested.append(nested_tables)
 
                     if row_texts:
                         data.append(row_texts)
                         cell_styles.append(row_styles)
                         cell_segments.append(row_seglist)
                         cell_merges.append(row_merge)
+                        cell_nested.append(row_nested)
 
                 if data:
                     blocks.append({
@@ -267,7 +261,8 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, bord
                         "style": {},
                         "cell_styles": cell_styles,
                         "cell_segments": cell_segments,
-                        "cell_merges": cell_merges
+                        "cell_merges": cell_merges,
+                        "cell_nested": cell_nested,   # ← 추가
                     })
                 return
 
@@ -278,7 +273,7 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, bord
                     blocks.append({
                         "type": "paragraph",
                         "content": full_text,
-                        "segments": segs
+                        "segments": segs,
                     })
 
             for child in list(node):
@@ -287,6 +282,110 @@ def parse_sections_to_blocks(zf: zipfile.ZipFile, para_shapes, char_shapes, bord
         walk(section_el, False)
 
     return blocks
+
+
+def parse_single_table(tbl_el, para_shapes, char_shapes, border_fills):
+    """
+    <hp:tbl> 요소 하나를 파싱해 table block(dict) 반환.
+    (기존 parse_sections_to_blocks 안의 표 처리 로직을 그대로 여기로 옮겼다고 보면 됨)
+    """
+    data = []
+    cell_styles = []
+    cell_segments = []
+    cell_merges = []
+
+    for tr in tbl_el.findall("hp:tr", NS):
+        row_texts = []
+        row_styles = []
+        row_seglist = []
+        row_merge = []
+
+        for tc in tr.findall("hp:tc", NS):
+            # 크기/배경/병합 정보
+            col_span, row_span, bg_color, w, h = parse_tc_props(tc, border_fills)
+
+            cell_text_chunks = []
+            segs_merged = []
+            cell_style = None
+
+            # 이 시점에서는 "텍스트용 p"만 처리. (중첩 표는 밖에서 처리)
+            for p in tc.findall(".//hp:p", NS):
+                segs = paragraph_to_segments(p, para_shapes, char_shapes)
+                if segs:
+                    cell_text_chunks.append("".join(s["text"] for s in segs))
+                    if cell_style is None:
+                        cell_style = segs[0]["style"].copy()
+                    segs_merged.extend(segs)
+
+            row_texts.append(" ".join([t for t in cell_text_chunks if t]))
+            row_styles.append(cell_style or {})
+            row_seglist.append(segs_merged)
+            row_merge.append({
+                "colSpan": col_span,
+                "rowSpan": row_span,
+                "bgColor": bg_color,
+                "width": w,
+                "height": h,
+            })
+
+        if row_texts:
+            data.append(row_texts)
+            cell_styles.append(row_styles)
+            cell_segments.append(row_seglist)
+            cell_merges.append(row_merge)
+
+    return {
+        "data": data,
+        "cell_styles": cell_styles,
+        "cell_segments": cell_segments,
+        "cell_merges": cell_merges,
+    }
+
+def parse_tc_contents(tc, para_shapes, char_shapes, border_fills):
+    """
+    하나의 <hp:tc> 안에서
+      - 중첩 <hp:tbl> 들을 table spec으로 추출하고
+      - 그 표들 안에 속하지 않는 p 들만 외부 셀 텍스트로 사용한다.
+    반환: (cell_text:str, cell_style:dict, segs_merged:list, nested_tables:list)
+    """
+    cell_text_chunks = []
+    segs_merged = []
+    cell_style = None
+    nested_tables = []
+
+    # 1) tc 아래 모든 중첩 tbl 수집
+    nested_tbl_elems = list(tc.findall(".//hp:tbl", NS))
+
+    # 1-1) 중첩 tbl 안에 포함된 모든 p를 set에 모아둠
+    p_in_nested = set()
+    for tbl in nested_tbl_elems:
+        for p in tbl.findall(".//hp:p", NS):
+            p_in_nested.add(p)
+
+    # 1-2) 중첩 tbl 자체를 table spec으로 파싱
+    for tbl in nested_tbl_elems:
+        tbl_block = parse_single_table(tbl, para_shapes, char_shapes, border_fills)
+        nested_tables.append({
+            "type": "table",
+            **tbl_block
+        })
+
+    # 2) tc 아래의 모든 p 중에서, nested tbl 안에 속하지 않는 것만 외부 텍스트로 사용
+    for p in tc.findall(".//hp:p", NS):
+        if p in p_in_nested:
+            continue  # 중첩 표 안의 문단은 셀 텍스트에서 제외
+
+        segs = paragraph_to_segments(p, para_shapes, char_shapes)
+        if segs:
+            cell_text_chunks.append("".join(s["text"] for s in segs))
+            if cell_style is None:
+                cell_style = segs[0]["style"].copy()
+            segs_merged.extend(segs)
+
+    cell_text = " ".join([t for t in cell_text_chunks if t])
+    return cell_text, (cell_style or {}), segs_merged, nested_tables
+
+
 
 
 def parse_table_styles_from_header(zf: zipfile.ZipFile):
@@ -421,13 +520,15 @@ def blocks_to_document_spec(blocks):
                 "style": {
                     "cell_font": "바탕체",
                     "cell_size": 11,
-                    "cell_align": ["left"] * cols
+                    "cell_align": ["left"] * cols,
                 },
                 "cell_styles": b.get("cell_styles"),
                 "cell_segments": b.get("cell_segments"),
-                "cell_merges": b.get("cell_merges")
+                "cell_merges": b.get("cell_merges"),
+                "cell_nested": b.get("cell_nested"),  # ← 추가
             }
             t_idx += 1
+
 
     return {"document": doc}
 

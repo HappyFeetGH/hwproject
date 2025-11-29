@@ -1,7 +1,7 @@
 import sys
 import json
 import yaml
-from doclib import generate_hwp_from_spec, generate_hwp_from_parsed_spec
+from doclib import generate_hwp_from_parsed_spec
 
 def load_spec(path):
     if path.endswith('.json'):
