@@ -1,3 +1,5 @@
+import os, sys, json
+from pyhwpx import Hwp
 import zipfile
 import xml.etree.ElementTree as ET
 import json
@@ -7,6 +9,28 @@ NS = {
     "hh": "http://www.hancom.co.kr/hwpml/2011/head"
 }
 HP = "{http://www.hancom.co.kr/hwpml/2011/paragraph}"
+
+def ensure_hwpx(input_path: str) -> str:
+    """
+    input_path가 .hwpx면 그대로 사용,
+    .hwp면 pyhwpx로 hwpx로 변환한 뒤 그 경로를 리턴한다.
+    그 외 확장자는 에러.
+    """
+    ext = os.path.splitext(input_path)[1].lower()
+    if ext == ".hwpx":
+        return input_path
+    if ext == ".hwp":
+        hwpx_path = os.path.splitext(input_path)[0] + ".hwpx"
+
+        hwp = Hwp()  # pyhwpx 래퍼. 내부에서 보안 모듈 등록까지 처리[web:148][web:331]
+        hwp.open(input_path)
+        # 포맷을 명시해서 hwpx로 저장[web:326][web:331]
+        hwp.save_as(hwpx_path, format="HWPX")
+        hwp.quit()
+
+        return hwpx_path
+
+    raise ValueError(f"지원하지 않는 확장자: {ext} (hwp/hwpx만 지원)")
 
 def parse_styles_from_header(zf: zipfile.ZipFile):
     """
@@ -616,6 +640,7 @@ def debug_borderfill(zf, bid):
 # 4) 전체 파이프라인 ----------------------------------------------------------
 
 def parse_hwpx_to_spec(hwpx_path: str, out_json_path: str = "parsed_spec.json"):
+    hwpx_path = ensure_hwpx(hwpx_path)
     with zipfile.ZipFile(hwpx_path, "r") as zf:
         para_shapes, char_shapes = parse_styles_from_header(zf)
         #debug_dump_styles(para_shapes, char_shapes)
@@ -627,6 +652,17 @@ def parse_hwpx_to_spec(hwpx_path: str, out_json_path: str = "parsed_spec.json"):
         json.dump(spec, f, ensure_ascii=False, indent=2)
     return spec
 
+def main():
+    # python parser.py input.hwp [output.json]
+    if len(sys.argv) < 2:
+        print("사용법: python parser.py <input.hwp|input.hwpx> [parsed_spec.json]")
+        sys.exit(1)
+
+    input_path = sys.argv[1]
+    out_json_path = sys.argv[2] if len(sys.argv) >= 3 else "parsed_spec.json"
+
+    spec = parse_hwpx_to_spec(input_path, out_json_path)
+    print(f"{out_json_path} 생성 완료")
+
 if __name__ == "__main__":
-    spec = parse_hwpx_to_spec("input.hwpx", "parsed_spec.json")
-    print("parsed_spec.json 생성 완료")
+    main()

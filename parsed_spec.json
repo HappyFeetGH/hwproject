@@ -1,1112 +1,262 @@
 {
   "document": {
-    "표1": {
-      "data": [
-        [
-          ""
-        ]
-      ],
+    "헤더": {
+      "content": "한솔정보나누기마당 (교무실:530-8900 / 행정실:530-8901 / 교장실:530-8902)",
       "style": {
-        "cell_font": "바탕체",
-        "cell_size": 11,
-        "cell_align": [
-          "left"
-        ]
-      },
-      "cell_styles": [
-        [
-          {}
-        ]
-      ],
-      "cell_segments": [
-        [
-          []
-        ]
-      ],
-      "cell_merges": [
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#000080",
-            "width": 47058,
-            "height": 665
-          }
-        ]
-      ],
-      "cell_nested": [
-        [
-          []
-        ]
-      ]
+        "FaceName": "중고딕",
+        "Height": 9.0,
+        "Bold": false,
+        "Align": "right"
+      }
     },
-    "문단1": {
-      "content": "2025학년도 학생평가 운영계획",
+    "제목": {
+      "content": "컵 스카우트 2024 선서식 참가 안내",
       "style": {
         "FaceName": "HY헤드라인M",
         "Height": 20.0,
+        "Bold": true,
+        "Align": "center"
+      }
+    },
+    "인사말": {
+      "content": "학부모님 가정에 행운이 가득하시길 기원합니다.",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      }
+    },
+    "본문1": {
+      "content": "제657대 한솔초등학교 컵스카우트는 선서식을 통해 스카우트 대원으로서의 자긍심을 높이고 다양한 과정활동을 경험하며, 작년에 이어 활동하는 대원에게는 진급식을 진행하고자 합니다. 이에 각 가정에서는 대원들이 선서식에 적극적으로 참여할 수 있도록 관심과 격려 부탁드립니다. 아울러 본 선서식에서는 부모님이 대원에게 항건을 직접 수여하고자 하오니 함께 자리를 빛내주시길 바랍니다.",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      }
+    },
+    "목록1": {
+      "content": "1. 장    소: 한솔초등학교 강당",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록2": {
+      "content": "2. 일    시: 2024. 4. 26.(금) 18:00 – 18:30",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록3": {
+      "content": "3. 대    상: 2024년 스카우트 등록을 한 대원 및 지도자",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록4": {
+      "content": "4. 준 비 물: 제복(구매권장), 조임(구매권장), 항건(학교 준비), 개인 물 등",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록5": {
+      "content": "5. 참가신청: 2024년 4월 19일까지 교무실 제출 (아침 8:30분 이후 제출)",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록6": {
+      "content": "6. 제복구매: http://eventsharp.com (구매 문의: 010-3659-6831)",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "목록7": {
+      "content": "7. 세부일정",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "left"
+      }
+    },
+    "일정표": {
+      "data": [
+        ["활동 순서", "시작", "종료", "활동내용", "비고"],
+        ["식전활동", "16:30", "17:00", "▶다인수 밀집행사 안전지도", "대원, 대장 활동"],
+        ["과정활동", "17:00", "18:00", "▶보별 과정활동 익히기\r\n- 스카우트 의식/예법/노래\r\n- 제복과 항건", "대원, 대장 활동"],
+        ["선서식", "18:00", "18:30", "입장 > 개회 > 국민의례 > 선서\r\n> 입대선포 > 항건 수여 > 폐회", "부모님께서 직접\r\n항건 수여"],
+        ["귀가", "18:30", "18:40", "▶귀가 및 주변 정리", "-"]
+      ],
+      "style": {
+        "cell_font": "바탕",
+        "cell_size": 10.0,
+        "cell_align": ["center", "center", "center", "left", "center"]
+      },
+      "cell_styles": [
+        [
+          {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}
+        ],
+        [
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}
+        ],
+        [
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}
+        ],
+        [
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}
+        ],
+        [
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"},
+          {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}
+        ]
+      ],
+      "cell_segments": [
+        [[{"text": "활동 순서", "style": {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}}], [{"text": "시작", "style": {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}}], [{"text": "종료", "style": {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}}], [{"text": "활동내용", "style": {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}}], [{"text": "비고", "style": {"FaceName": "돋움", "Height": 10.0, "Bold": true, "Align": "center"}}]],
+        [[{"text": "식전활동", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "16:30", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "17:00", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "▶다인수 밀집행사 안전지도", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"}}], [{"text": "대원, 대장 활동", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}]],
+        [[{"text": "과정활동", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "17:00", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "18:00", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "▶보별 과정활동 익히기\r\n- 스카우트 의식/예법/노래\r\n- 제복과 항건", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"}}], [{"text": "대원, 대장 활동", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}]],
+        [[{"text": "선서식", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "18:00", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "18:30", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "입장 > 개회 > 국민의례 > 선서\r\n> 입대선포 > 항건 수여 > 폐회", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"}}], [{"text": "부모님께서 직접\r\n항건 수여", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}]],
+        [[{"text": "귀가", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "18:30", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "18:40", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}], [{"text": "▶귀가 및 주변 정리", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "left"}}], [{"text": "-", "style": {"FaceName": "바탕", "Height": 10.0, "Bold": false, "Align": "center"}}]]
+      ],
+      "cell_merges": [
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": null}],
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}],
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}],
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}],
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": null}]
+      ],
+      "cell_nested": [
+        [[], [], [], [], []],
+        [[], [], [], [], []],
+        [[], [], [], [], []],
+        [[], [], [], [], []],
+        [[], [], [], [], []]
+      ]
+    },
+    "절취선": {
+      "content": "---------------------------< 자 르 는  선 >---------------------------",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 10.0,
         "Bold": false,
         "Align": "center"
-      },
-      "segments": [
-        {
-          "text": "2025학년도 학생평가 운영계획",
-          "style": {
-            "Align": "center",
-            "FaceName": "HY헤드라인M",
-            "Height": 20.0,
-            "Bold": false
-          }
-        }
-      ]
+      }
     },
-    "표2": {
+    "신청서제목": {
+      "content": "2024 한솔초 컵스카우트 선서식 참가 동의서",
+      "style": {
+        "FaceName": "HY헤드라인M",
+        "Height": 16.0,
+        "Bold": true,
+        "Align": "center"
+      }
+    },
+    "신청서표": {
       "data": [
-        [
-          ""
-        ]
+        ["이름", "학년 반", "학생 참가 여부\r\n(○, ×)", "보호자 참석", "보호자 서명"],
+        ["", "", "", "", "(인)"]
       ],
       "style": {
-        "cell_font": "바탕체",
-        "cell_size": 11,
-        "cell_align": [
-          "left"
-        ]
+        "cell_font": "바탕",
+        "cell_size": 11.0,
+        "cell_align": ["center", "center", "center", "center", "center"]
       },
       "cell_styles": [
         [
-          {}
+          {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"},
+          {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}
+        ],
+        [
+          {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"},
+          {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"}
         ]
       ],
       "cell_segments": [
         [
-          []
+          [{"text": "이름", "style": {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}}],
+          [{"text": "학년 반", "style": {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}}],
+          [{"text": "학생 참가 여부\r\n(○, ×)", "style": {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}}],
+          [{"text": "보호자 참석", "style": {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}}],
+          [{"text": "보호자 서명", "style": {"FaceName": "돋움", "Height": 11.0, "Bold": true, "Align": "center"}}]
+        ],
+        [
+          [{"text": "", "style": {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"}}],
+          [{"text": "", "style": {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"}}],
+          [{"text": "", "style": {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"}}],
+          [{"text": "", "style": {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "center"}}],
+          [{"text": "(인)", "style": {"FaceName": "바탕", "Height": 11.0, "Bold": false, "Align": "right"}}]
         ]
       ],
       "cell_merges": [
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#000080",
-            "width": 47058,
-            "height": 665
-          }
-        ]
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": 600}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": 600}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": 600}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": 600}, {"colSpan": 1, "rowSpan": 1, "bgColor": "#EFEFEF", "width": null, "height": 600}],
+        [{"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": 1200}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": 1200}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": 1200}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": 1200}, {"colSpan": 1, "rowSpan": 1, "bgColor": null, "width": null, "height": 1200}]
       ],
       "cell_nested": [
-        [
-          []
-        ]
+        [[], [], [], [], []],
+        [[], [], [], [], []]
       ]
     },
-    "문단2": {
-      "content": "한솔초등학교",
+    "신청서날짜": {
+      "content": "2024년  4월    일",
       "style": {
-        "FaceName": "함초롬바탕",
+        "FaceName": "바탕",
         "Height": 12.0,
-        "Bold": false,
-        "Align": "right"
-      },
-      "segments": [
-        {
-          "text": "한솔초등학교",
-          "style": {
-            "Align": "right",
-            "FaceName": "함초롬바탕",
-            "Height": 12.0,
-            "Bold": false
-          }
-        }
-      ]
+        "Bold": true,
+        "Align": "center"
+      }
     },
-    "문단3": {
-      "content": "1) 평가 목적 : 학생 개인의 성취수준에 맞는 개인별 맞춤형 학습 지원",
+    "수신자": {
+      "content": "한솔초등학교스카우트 육성단체장 귀하",
       "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "1) 평가 목적 : 학생 개인의 성취수준에 맞는 개인별 맞춤형 학습 지원 ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단4": {
-      "content": "- 기초학력과 창의력, 문제해결력 등 핵심역량 신장",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "- 기초학력과 창의력, ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        },
-        {
-          "text": "문제해결력 등 ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": true
-          }
-        },
-        {
-          "text": "핵심역량 신장",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단5": {
-      "content": "- 교과 핵심 개념 및 성취 기준 보장",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "- 교과 핵심 개념 및 성취 기준 보장",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단6": {
-      "content": "- 과정 중심의 다양한 평가로 학생의 배움과 성장 지원 및 삶의 역량 계발",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "- 과정 중심의 다양한 평가로 학생의 배움과 성장 지원 및 삶의 역량 계발",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단7": {
-      "content": "- 미래핵심역량 계발",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "- 미래핵심역량 계발",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단8": {
-      "content": "2) 평가의 방향",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "2) 평가의 방향 ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단9": {
-      "content": "학생 개개인의 교육 목표 도달을 진단하고 학생 맞춤형 학습 지원을 강화를 방향으로 합리적인 평가 방법 및 도구를 개발하여 학생의 교과 활동에 대한 학업 성취도 확인 및 수업 개선 자료로 활용한다.",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": " ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        },
-        {
-          "text": "학생 개개인의 교육 목표 도달을 진단하고 학생 맞춤형 학습 지원을 강화를 방향으로 ",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 20.0,
-            "Bold": false
-          }
-        },
-        {
-          "text": "합리적인 평가 방법 및 도구를 개발하여 학생의 교과 활동에 대한 학업 성취도 확인 및 수업 개선 자료로 활용한다.",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "문단10": {
-      "content": "1) 평가 절차",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 11.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "1) 평가 절차",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 11.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "표3": {
-      "data": [
-        [
-          "순",
-          "평가 절차",
-          "시기",
-          "관련 교육 활동 내용",
-          "비고"
-        ],
-        [
-          "1",
-          "학년별 교수·학습 및 평가 계획 수립",
-          "학기초",
-          "학년별 자체 교수·학습 및 평가 계획 수립 (교사별 평가, 정의적 영역 평가, 논술형 평가 포함)",
-          ""
-        ],
-        [
-          "2",
-          "평가 실시",
-          "연중",
-          "정기적인 학업성취도 진단을 기반으로 한 배움 중심 학습 과정 평가",
-          "상시"
-        ],
-        [
-          "3",
-          "평가 결과 분석 활용",
-          "연중",
-          "다음 학습 환류 총괄 평가 결과 학생 개별 통지, 학년별 특성에 맞춘 학년별 평가결과 가정 통지",
-          ""
-        ]
-      ],
-      "style": {
-        "cell_font": "바탕체",
-        "cell_size": 11,
-        "cell_align": [
-          "left",
-          "left",
-          "left",
-          "left",
-          "left"
-        ]
-      },
-      "cell_styles": [
-        [
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          }
-        ],
-        [
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "HY헤드라인M",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 12.0,
-            "Bold": false
-          },
-          {}
-        ],
-        [
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 13.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 13.0,
-            "Bold": true
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          }
-        ],
-        [
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "center",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {
-            "Align": "justify",
-            "FaceName": "맑은 고딕",
-            "Height": 10.0,
-            "Bold": false
-          },
-          {}
-        ]
-      ],
-      "cell_segments": [
-        [
-          [
-            {
-              "text": "순",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "평가 절차",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "시기",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "관련 교육 활동 내용",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "비고",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ]
-        ],
-        [
-          [
-            {
-              "text": "1",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "학년별 교수·학습 및 평가 계획 수립",
-              "style": {
-                "Align": "justify",
-                "FaceName": "HY헤드라인M",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "학기초",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "학년별 자체 교수·학습 및 평가 계획 수립",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 12.0,
-                "Bold": false
-              }
-            },
-            {
-              "text": "(교사별 평가, 정의적 영역 평가, 논술형 평가 포함)",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 9.0,
-                "Bold": false
-              }
-            }
-          ],
-          []
-        ],
-        [
-          [
-            {
-              "text": "2",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 13.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "평가 실시",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 13.0,
-                "Bold": true
-              }
-            }
-          ],
-          [
-            {
-              "text": "연중",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "정기적인 학업성",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            },
-            {
-              "text": "취도 진단을 기반으로 한 배움 중심 학습 과정 평가",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": true
-              }
-            }
-          ],
-          [
-            {
-              "text": "상시",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ]
-        ],
-        [
-          [
-            {
-              "text": "3",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "평가 결과 분석 활용",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "연중",
-              "style": {
-                "Align": "center",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          [
-            {
-              "text": "다음 학습 환류",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            },
-            {
-              "text": "총괄 평가 결과 학생 개별 통지, 학년별 특성에 맞춘 학년별 평가결과 가정 통지",
-              "style": {
-                "Align": "justify",
-                "FaceName": "맑은 고딕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ],
-          []
-        ]
-      ],
-      "cell_merges": [
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#B3C5F3",
-            "width": 3273,
-            "height": 2131
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#B3C5F3",
-            "width": 12329,
-            "height": 2131
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#B3C5F3",
-            "width": 3776,
-            "height": 2131
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#B3C5F3",
-            "width": 22703,
-            "height": 2131
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": "#B3C5F3",
-            "width": 3839,
-            "height": 2131
-          }
-        ],
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3273,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 12329,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3776,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 22703,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3839,
-            "height": 3997
-          }
-        ],
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3273,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 12329,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3776,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 22703,
-            "height": 3997
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3839,
-            "height": 3997
-          }
-        ],
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3273,
-            "height": 4731
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 12329,
-            "height": 4731
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3776,
-            "height": 4731
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 22703,
-            "height": 4731
-          },
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 3839,
-            "height": 4731
-          }
-        ]
-      ],
-      "cell_nested": [
-        [
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [],
-          []
-        ],
-        [
-          [],
-          [],
-          [],
-          [],
-          []
-        ]
-      ]
-    },
-    "문단11": {
-      "content": "표 안의 표",
-      "style": {
-        "FaceName": "함초롬바탕",
-        "Height": 12.0,
-        "Bold": false,
-        "Align": "justify"
-      },
-      "segments": [
-        {
-          "text": "표 안의 표",
-          "style": {
-            "Align": "justify",
-            "FaceName": "함초롬바탕",
-            "Height": 12.0,
-            "Bold": false
-          }
-        }
-      ]
-    },
-    "표4": {
-      "data": [
-        [
-          "표 안에도 표가 있어용"
-        ]
-      ],
-      "style": {
-        "cell_font": "바탕체",
-        "cell_size": 11,
-        "cell_align": [
-          "left"
-        ]
-      },
-      "cell_styles": [
-        [
-          {
-            "Align": "justify",
-            "FaceName": "바탕",
-            "Height": 10.0,
-            "Bold": false
-          }
-        ]
-      ],
-      "cell_segments": [
-        [
-          [
-            {
-              "text": "표 안에도 표가 있어용",
-              "style": {
-                "Align": "justify",
-                "FaceName": "바탕",
-                "Height": 10.0,
-                "Bold": false
-              }
-            }
-          ]
-        ]
-      ],
-      "cell_merges": [
-        [
-          {
-            "colSpan": 1,
-            "rowSpan": 1,
-            "bgColor": null,
-            "width": 47624,
-            "height": 18828
-          }
-        ]
-      ],
-      "cell_nested": [
-        [
-          [
-            {
-              "type": "table",
-              "data": [
-                [
-                  "진짜",
-                  "에요"
-                ],
-                [
-                  "ㅋㅁㄴㅇㄹㅁㄴㅇㄹ",
-                  "ㅎㅎㅎ"
-                ]
-              ],
-              "cell_styles": [
-                [
-                  {
-                    "Align": "justify",
-                    "FaceName": "바탕",
-                    "Height": 11.0,
-                    "Bold": false
-                  },
-                  {
-                    "Align": "justify",
-                    "FaceName": "HY헤드라인M",
-                    "Height": 10.0,
-                    "Bold": true
-                  }
-                ],
-                [
-                  {
-                    "Align": "justify",
-                    "FaceName": "바탕",
-                    "Height": 10.0,
-                    "Bold": true
-                  },
-                  {
-                    "Align": "justify",
-                    "FaceName": "바탕",
-                    "Height": 10.0,
-                    "Bold": false
-                  }
-                ]
-              ],
-              "cell_segments": [
-                [
-                  [
-                    {
-                      "text": "진짜",
-                      "style": {
-                        "Align": "justify",
-                        "FaceName": "바탕",
-                        "Height": 11.0,
-                        "Bold": false
-                      }
-                    }
-                  ],
-                  [
-                    {
-                      "text": "에요",
-                      "style": {
-                        "Align": "justify",
-                        "FaceName": "HY헤드라인M",
-                        "Height": 10.0,
-                        "Bold": true
-                      }
-                    }
-                  ]
-                ],
-                [
-                  [
-                    {
-                      "text": "ㅋㅁㄴㅇㄹ",
-                      "style": {
-                        "Align": "justify",
-                        "FaceName": "바탕",
-                        "Height": 10.0,
-                        "Bold": true
-                      }
-                    },
-                    {
-                      "text": "ㅁㄴㅇㄹ",
-                      "style": {
-                        "Align": "justify",
-                        "FaceName": "바탕",
-                        "Height": 10.0,
-                        "Bold": false
-                      }
-                    }
-                  ],
-                  [
-                    {
-                      "text": "ㅎㅎㅎ",
-                      "style": {
-                        "Align": "justify",
-                        "FaceName": "바탕",
-                        "Height": 10.0,
-                        "Bold": false
-                      }
-                    }
-                  ]
-                ]
-              ],
-              "cell_merges": [
-                [
-                  {
-                    "colSpan": 1,
-                    "rowSpan": 1,
-                    "bgColor": null,
-                    "width": 23019,
-                    "height": 282
-                  },
-                  {
-                    "colSpan": 1,
-                    "rowSpan": 1,
-                    "bgColor": null,
-                    "width": 23019,
-                    "height": 282
-                  }
-                ],
-                [
-                  {
-                    "colSpan": 1,
-                    "rowSpan": 1,
-                    "bgColor": null,
-                    "width": 23019,
-                    "height": 282
-                  },
-                  {
-                    "colSpan": 1,
-                    "rowSpan": 1,
-                    "bgColor": null,
-                    "width": 23019,
-                    "height": 282
-                  }
-                ]
-              ]
-            }
-          ]
-        ]
-      ]
+        "FaceName": "바탕",
+        "Height": 14.0,
+        "Bold": true,
+        "Align": "center"
+      }
     }
   }
 }

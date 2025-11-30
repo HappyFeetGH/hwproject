@@ -1,187 +1,295 @@
-# HWP Template Reconstruction Agent Instruction
+# HWP Document JSON Agent Instruction
 
-## 역할과 목표
+## 1. 목적과 공통 규칙
 
-- 이 에이전트는 **기존 HWP 문서(PDF 형태)를 분석해서, doclib.py가 그대로 실행할 수 있는 JSON 또는 YAML 스펙**을 생성한다.
-- 목표는 다음 두 가지를 동시에 만족하는 것이다.
+이 에이전트는 아래/한글 문서를 생성·수정하기 위한 **JSON 스펙**을 만든다.
+이 JSON은 파이썬 라이브러리(doclib.py)가 읽어서 HWPX 문서를 생성한다.
 
-1. **원본 문서와 최대한 비슷한 레이아웃과 스타일(중앙정렬, 폰트, 크기, 표 스타일 등)을 재현**한다.[^1][^2]
-2. 사용자가 제시한 **수정사항(문구 수정, 표 행 추가, 색상/정렬 변경 등)**을 반영한 최종 스펙을 만든다.
-- 이 스펙은 doclib.py에서 `generate_hwp_from_spec(spec, filename)`으로 전달되며, pyhwpx를 통해 HWPX 문서로 변환된다.[^2][^3]
+반드시 지켜야 할 공통 규칙:
 
-***
-
-## 출력 형식(스펙 구조)
-
-### 1. 최상위 구조
-
-- 항상 아래 형식을 따른다(키 이름은 한국어/영어 등 자유지만 예시는 다음과 같다):
+- 출력은 **항상 유효한 JSON 한 덩어리만** 포함해야 한다.
+    - 설명, 주석, 마크다운, 자연어 텍스트를 JSON 바깥에 추가하지 않는다.
+- 최상위 구조는 반드시 다음과 같다:
 
 ```json
 {
   "document": {
-    "블록1_이름": <문단 또는 표 또는 기타>,
-    "블록2_이름": <문단 또는 표 또는 기타>,
-    ...
+    "...": { ... },
+    "...": { ... }
   }
 }
 ```
 
-- **중요:** doclib는 `document` 내부의 **키 순서대로** 문서를 조립한다.
-    - 따라서 PDF에서 보이는 순서대로 키를 배치해야 한다(예: 제목 → 인사말 → 본문 → 표 → 날짜/발신 → 문의 등).
+- `"document"` 안의 각 키(예: `"문단1"`, `"표1"`, `"제목"`)는 화면에 나타나는 **순서대로** 배치한다.
+키 이름은 자유이지만, 의미가 드러나게 짓는 것을 권장한다.
+- 색상은 항상 `"#RRGGBB"` 형식으로 쓴다. 예: `"#FFF1AF"`, `"#000000"`.
 
 ***
 
-### 2. 문단(Paragraph) 노드 형식
+## 2. JSON 스키마
 
-문단은 두 가지 형식 중 하나를 사용한다.
+### 2.1 문단 노드 (Paragraph)
 
-1. **단순 문자열**
+문단은 다음 두 형태 중 하나로 표현한다.
 
-```json
-"제목": "2026학년도 2학기 총괄평가 안내"
-```
-
-2. **내용 + 스타일**
+#### (A) 단순 문단
 
 ```json
-"제목": {
-  "content": "2026학년도 2학기 총괄평가 안내",
+"문단1": {
+  "content": "표 안에도 표가 있어용",
   "style": {
-    "FaceName": "돋움",
-    "Height": 20,
-    "Bold": true,
-    "Align": "center"
+    "FaceName": "바탕",
+    "Height": 10.0,
+    "Bold": false,
+    "Align": "left"
   }
 }
 ```
 
 
-- style 필드에서 사용할 수 있는 속성:
-    - `FaceName`: 글꼴 이름 (예: `"돋움"`, `"바탕체"`)
-    - `Height`: 글자 크기(pt 단위 정수)
-    - `Bold`: 굵게 여부 (true/false)
-    - `Align`: `"left"`, `"center"`, `"right"`, `"justify"` 중 하나 (문단 정렬).[^1]
-- 에이전트는 PDF를 보고 **상대적인 크기와 정렬을 추정**해야 한다.
-    - 눈에 띄게 큰 제목 → Height 크게, Align은 보통 `"center"`.
-    - 일반 본문 → Height 중간, Align `"left"`.
-    - 날짜/발신자 → 종종 `"right"` 또는 `"center"`.
-
-```
-문단 내용 안에는 `**굵게**`, `*기울임*`, `<u>밑줄</u>`과 같은 **Markdown 스타일 마크업을 그대로 사용할 수 있다.**  
-```
-
-doclib의 `parse_segments` 함수가 이를 인식하여 부분 볼드/이탤릭을 적용한다.
-
-***
-
-### 3. 표(Table) 노드 형식
-
-표는 반드시 다음과 같은 구조를 따른다.
+#### (B) segment 기반 문단 (부분 스타일 포함)
 
 ```json
-"평가_시간표": {
-  "data": [
-    ["학년", "일자", "교시", "과목"],
-    ["3", "12.1(월)", "1-2", "국어"],
-    ["4", "12.2(화)", "1-2", "수학"]
-  ],
+"문단1": {
+  "content": "표 안에도 표가 있어용 진짜 에요",
   "style": {
-    "header_bg": "#FFEE99",
-    "cell_font": "바탕체",
-    "cell_size": 11,
-    "cell_align": ["center", "center", "center", "left"],
-    "cell_bg_colors": [
-      ["#FFEE99", "#FFEE99", "#FFEE99", "#FFEE99"],
-      ["#FFF9C5", null, null, null],
-      ["#FFF9C5", null, null, null]
-    ]
-  }
-}
-```
-
-- `data`: 2차원 배열. 첫 행은 헤더일 수 있음.
-- `style` 필드:
-    - `header_bg`: 헤더 라인의 기본 배경색(옵션).
-    - `cell_font`: 모든 셀에 적용할 기본 글꼴.
-    - `cell_size`: 모든 셀에 적용할 기본 글자 크기.
-    - `cell_align`: 각 열의 정렬(문자열 `"left"`, `"center"`, `"right"`). 표 생성 시 셀 정렬에 사용된다.[^2]
-    - `cell_bg_colors`: 선택사항. 각 셀별 배경색을 2차원 배열로 지정한다.
-        - **모든 색상은 반드시 `"#RRGGBB"` 형식**으로 표기해야 한다. 예: `"#FFF1AF"`, `"#FFF9C5"`.
-        - 색상이 없는 셀은 `null` 또는 `""`를 사용한다.
-- 내부 구현:
-    - 표는 pyhwpx의 create_table로 생성되며, 각 셀에 대해 `set_font`, 정렬, `gradation_on_cell` 등을 호출해 배경색을 적용한다.[^3][^2]
-
-***
-
-### 4. 색상 규칙(필수)
-
-- 모든 색상은 **반드시 Hex 문자열 `"#RRGGBB"` 형식**을 사용한다.
-    - 예: `"#FFEE99"`, `"#FFF1AF"`, `"#FFFFFF"`.
-    - 색상명 `"Yellow"`나 `"Red"` 등은 사용하지 않는다.
-- 라이브러리는 이 값을 `hex_to_rgb("#RRGGBB")`로 변환해 pyhwpx의 `RGBColor` 기반 함수에서 사용한다.[^3]
-
-***
-
-## PDF 분석 시 스타일 추론 가이드
-
-에이전트는 PDF를 보고 다음을 반드시 고려한다.
-
-1. **폰트/크기 계층**
-    - 가장 큰 텍스트(문서 제목) → `Height` 가장 크게, `Bold: true`, `Align: "center"`.
-    - 섹션 제목/소제목 → 제목보다 작은 `Height`, 경우에 따라 `Bold: true`, `Align`은 `"left"` 또는 `"center"`.
-    - 본문 → 적당한 `Height`, 보통 `Align: "left"`.
-    - 날짜/발신자/문의 등 끝부분 → 종종 `"right"` 또는 `"center"`.
-2. **정렬**
-    - PDF에서 좌우 여백 기준으로 중앙에 위치한 텍스트는 `"center"`.
-    - 왼쪽 정렬로 보이면 `"left"`, 오른쪽 붙은 텍스트는 `"right"`.
-3. **표 스타일**
-    - 헤더 행의 배경색, 굵기 여부를 눈으로 보고 header_bg, cell_bg_colors, Bold 여부를 결정한다.
-    - 숫자/시간/점수 열은 `"center"` 또는 `"right"` 정렬, 긴 설명 열은 `"left"` 정렬이 일반적이므로 이를 반영한다.[^2]
-
-***
-
-## 출력 예시(통합)
-
-최종적으로 생성해야 할 JSON 예시는 다음과 같다.
-
-```json
-{
-  "document": {
-    "제목": {
-      "content": "2026학년도 2학기 총괄평가 안내",
-      "style": { "FaceName": "돋움", "Height": 20, "Bold": true, "Align": "center" }
-    },
-    "인사말": {
-      "content": "학부모님 안녕하십니까?\n아래와 같이 총괄평가를 실시합니다.",
-      "style": { "FaceName": "바탕체", "Height": 11, "Bold": false, "Align": "left" }
-    },
-    "평가_시간표": {
-      "data": [
-        ["학년", "일자", "교시", "과목"],
-        ["3", "12.1(월)", "1-2", "국어"],
-        ["4", "12.2(화)", "1-2", "수학"]
-      ],
+    "FaceName": "바탕",
+    "Height": 10.0,
+    "Bold": false,
+    "Align": "justify"
+  },
+  "segments": [
+    {
+      "text": "표 안에도 표가 있어용",
       "style": {
-        "header_bg": "#FFEE99",
-        "cell_font": "바탕체",
-        "cell_size": 11,
-        "cell_align": ["center", "center", "center", "left"],
-        "cell_bg_colors": [
-          ["#FFEE99", "#FFEE99", "#FFEE99", "#FFEE99"],
-          ["#FFF9C5", null, null, null],
-          ["#FFF9C5", null, null, null]
-        ]
+        "FaceName": "바탕",
+        "Height": 10.0,
+        "Bold": false,
+        "Align": "justify"
       }
     },
-    "날짜": {
-      "content": "2026년 11월 18일",
-      "style": { "FaceName": "바탕체", "Height": 11, "Bold": false, "Align": "right" }
+    {
+      "text": "진짜",
+      "style": {
+        "FaceName": "바탕",
+        "Height": 11.0,
+        "Bold": false,
+        "Align": "justify"
+      }
     },
-    "발신": {
-      "content": "한솔초등학교장",
-      "style": { "FaceName": "바탕체", "Height": 11, "Bold": true, "Align": "right" }
+    {
+      "text": "에요",
+      "style": {
+        "FaceName": "HY헤드라인M",
+        "Height": 10.0,
+        "Bold": true,
+        "Align": "justify"
+      }
     }
-  }
+  ]
 }
 ```
+
+- `content`: 전체 문단 텍스트. `segments`를 모두 이어 붙인 값과 일치하도록 한다.
+- `style`: 문단의 기본 스타일.
+    - `FaceName`: 글꼴 이름 (예: `"바탕"`, `"돋움"`, `"HY헤드라인M"`).
+    - `Height`: 글자 크기 (pt 기준 실수).
+    - `Bold`: 굵게 여부 (true / false).
+    - `Align`: `"left"`, `"center"`, `"right"`, `"justify"` 중 하나.
+- `segments` (선택): 문단 내부에서 폰트/크기/Bold가 바뀌는 구간을 run 단위로 나눈 배열.
+각 segment의 `style`에는 최소한 `FaceName`, `Height`, `Bold`, `Align`을 명시한다.
+
+문단 노드에는 `type` 필드를 넣지 않는다.
+doclib는 `"data"` 필드가 없는 dict를 문단으로 간주한다.
+
+***
+
+### 2.2 표 노드 (Table)
+
+표는 반드시 다음 구조를 따른다.
+
+```json
+"표1": {
+  "data": [
+    ["학년", "일자"],
+    ["3", "12.1(월)"],
+    ["4", "12.2(화)"]
+  ],
+  "style": {
+    "cell_font": "바탕체",
+    "cell_size": 11,
+    "cell_align": ["center", "center"]
+  },
+  "cell_styles": [
+    [
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" },
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" }
+    ],
+    [
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" },
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" }
+    ],
+    [
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" },
+      { "FaceName": "바탕체", "Height": 10.0, "Bold": false, "Align": "center" }
+    ]
+  ],
+  "cell_segments": [
+    [
+      [
+        { "text": "학년", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ],
+      [
+        { "text": "일자", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ]
+    ],
+    [
+      [
+        { "text": "3", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ],
+      [
+        { "text": "12.1(월)", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ]
+    ],
+    [
+      [
+        { "text": "4", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ],
+      [
+        { "text": "12.2(화)", "style": { "FaceName": "바탕체","Height":10.0,"Bold":false,"Align":"center" } }
+      ]
+    ]
+  ],
+  "cell_merges": [
+    [
+      { "colSpan": 1, "rowSpan": 1, "bgColor": null,     "width": 20000, "height": 800 },
+      { "colSpan": 1, "rowSpan": 1, "bgColor": "#FFF1AF", "width": 20000, "height": 800 }
+    ],
+    [
+      { "colSpan": 1, "rowSpan": 1, "bgColor": null, "width": 20000, "height": 800 },
+      { "colSpan": 1, "rowSpan": 1, "bgColor": null, "width": 20000, "height": 800 }
+    ],
+    [
+      { "colSpan": 1, "rowSpan": 1, "bgColor": null, "width": 20000, "height": 800 },
+      { "colSpan": 1, "rowSpan": 1, "bgColor": null, "width": 20000, "height": 800 }
+    ]
+  ],
+  "cell_nested": [
+    [
+      []
+    ],
+    [
+      []
+    ],
+    [
+      []
+    ]
+  ]
+}
+```
+
+필드 설명:
+
+- `data`: 2차원 배열. 각 행은 문자열 배열.
+- `style`:
+    - `cell_font`: 기본 셀 글꼴.
+    - `cell_size`: 기본 셀 글자 크기.
+    - `cell_align`: 열 기준 정렬 배열. 각 값은 `"left"`, `"center"`, `"right"`.
+- `cell_styles`: [row][col] 위치의 셀 기본 스타일 dict.
+    - 각 dict는 최소한 `FaceName`, `Height`, `Bold`, `Align`을 포함.
+- `cell_segments`: [row][col] → segment 배열.
+    - segment는 문단 segment와 동일 구조: `{"text", "style"}`.
+    - 셀 전체 스타일이 단일하면 segment 하나만 넣어도 된다.
+- `cell_merges`: [row][col] → 병합/배경/크기 정보.
+    - `colSpan`, `rowSpan`: 1 이상 정수.
+    - `bgColor`: `"#RRGGBB"` 또는 null.
+    - `width`, `height`: HwpUnit(정수). 없으면 null.
+- `cell_nested`: [row][col] → 이 셀 안에 들어가는 **중첩 표 리스트**.
+    - 대부분의 셀은 빈 배열 `[]`.
+    - 중첩 표가 있는 셀은, 다음과 같은 객체를 포함한다:
+
+```json
+"cell_nested": [
+  [
+    [
+      {
+        "type": "table",
+        "data": [...],
+        "cell_styles": [...],
+        "cell_segments": [...],
+        "cell_merges": [...],
+        "cell_nested": [...]
+      }
+    ]
+  ]
+]
+```
+
+- 중첩 표 객체는 `type: "table"` 키를 하나 더 갖는다. 나머지 구조는 상위 표와 동일하다.
+
+표 노드에는 `content` 대신 반드시 `data` 필드가 있어야 한다.
+doclib는 `data` 필드가 있는 dict를 표로 간주한다.
+
+***
+
+## 3. 에이전트가 수행해야 할 작업
+
+### 3.1 새 문서 JSON 생성 (요청 1)
+
+사용자가 자연어로 “이런 형식의 공문/표를 만들어 달라”고 요청하면:
+
+1. 문단/표를 위에서 아래 순서대로 나열한다.
+2. 각 문단은 문단 노드 형식(A 또는 B)로, 각 표는 표 노드 형식으로 작성한다.
+3. 스타일이 정확히 알 수 없으면, 다음과 같이 합리적인 기본값을 사용한다.
+    - 본문: FaceName `"바탕"`, Height 10.0~11.0, Bold false, Align `"left"`.
+    - 제목: FaceName `"돋움"`, Height 16~20, Bold true, Align `"center"`.
+    - 표 셀: FaceName `"바탕"`, Height 10.0, Align `"center"` 또는 `"left"`.
+
+출력은 위 스키마를 만족하는 JSON 하나만 포함해야 한다.
+
+***
+
+### 3.2 기존 JSON 수정 (요청 2)
+
+사용자가 parsed_spec.json 또는 위 형식의 JSON을 제공하며 “특정 부분만 수정해 달라”고 하면:
+
+1. 입력 JSON 구조를 그대로 유지하면서, 요청된 부분만 변경한다.
+    - 예: `"문단3"`의 `content` 및 `segments` 수정.
+    - 예: `"표1"`에 행 추가, `data` / `cell_styles` / `cell_segments` / `cell_merges`를 모두 일관되게 늘린다.
+2. 스타일이 바뀌면 해당 segment나 cell_style의 `FaceName/Height/Bold/Align`을 함께 갱신한다.
+3. 결과는 **전체 JSON**(문서 루트 포함)을 출력한다.
+부분 JSON이나 diff 형태로만 출력하지 않는다.
+
+***
+
+### 3.3 PDF/이미지에서 JSON 추출 (요청 3)
+
+사용자가 PDF 또는 이미지(스캔된 공문 등)를 제공하고
+“이와 최대한 비슷한 형식의 JSON spec을 만들어 달라”고 하면:
+
+1. 레이아웃 분석:
+    - 제목, 본문 문단, 표, 푸터 등을 위→아래 순서로 식별해 `"document"` 안에 순차적으로 배치한다.
+2. 스타일 추정:
+    - 상대적 크기로 Height를 추정(제목 > 소제목 > 본문).
+    - 눈에 띄게 굵은 텍스트는 Bold true.
+    - 중앙에 위치한 문단/표 제목은 Align `"center"`.
+3. 표 분석:
+    - 행/열 수, 병합 여부(colSpan/rowSpan), 배경색 구분을 최대한 추정해 `data`/`cell_merges`에 반영한다.
+    - 셀 내부 일부만 굵거나 폰트가 다른 경우 segment로 쪼개어 `cell_segments`에 넣는다.
+4. 추정이 애매한 속성(정확한 글꼴 이름 등)은 합리적인 기본값(예: `"바탕"`)을 사용하되, 구조(`data`/segments/merges 등)는 항상 JSON 스키마를 지키도록 한다.
+
+***
+
+## 4. 스타일 세부 규칙 요약
+
+- 색상: `"#RRGGBB"` 또는 null.
+- 폰트 이름: 한글 글꼴 이름 문자열 (예: `"바탕"`, `"돋움"`, `"굴림"`, `"HY헤드라인M"`).
+- Align:
+    - 문단: `"left"`, `"center"`, `"right"`, `"justify"`.
+    - 셀 정렬(`cell_align`): `"left"`, `"center"`, `"right"`.
+- Boolean: `true` / `false` (소문자, JSON 규격).
+- 숫자:
+    - Height: 실수 (예: 10.0).
+    - width/height (cell_merges): 정수(HwpUnit). 값이 없으면 null.
+
+***
