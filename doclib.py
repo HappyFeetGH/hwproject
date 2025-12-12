@@ -185,35 +185,62 @@ def set_current_cell_size(hwp, width_hu, height_hu):
 
 
 def generate_hwp_from_spec(spec, filename="output.hwpx"):
+    """
+    spec 이 parsed_spec(json) 형식이면 `insert_paragraph_from_node` /
+    `insert_table_and_style`를 사용하고,
+    옛 role+styles 형식이면 insert_role_and_style을 사용한다.
+    """
     hwp = Hwp()
-    doc = spec["document"] if "document" in spec else spec
+    doc = spec.get("document", spec)
 
-    for key, value in doc.items():
-        # 텍스트/문단류
-        if isinstance(value, str) or (isinstance(value, dict) and "content" in value):
-            # 스타일 추출 - 필요하면 value.get("style") 등
-            text = value if isinstance(value, str) else value["content"]
-            # 기본 스타일 또는 key별 heuristic (원하면 key마다 스타일 분기 가능)
-            style = heuristic_style_for_key(key)
-            insert_role_and_style(hwp, {key: text}, style, key)
-        # 표류
-        elif isinstance(value, dict) and "data" in value:
-            table_style = value.get("style", {})
-            cell_aligns = table_style.get("cell_align")
-            # cell_styles, bg_colors 등 확장
-            insert_table_and_style(
-                hwp,
-                value["data"],
-                cell_styles=None,  # 추가할 부분
-                cell_bg_colors=[[table_style.get("header_bg")]*len(value["data"][0])] + [[None]*len(value["data"][0])]*(len(value["data"])-1),
-                col_aligns=cell_aligns
-            )
-        # 기타(이미지, 구분선, 추가 미래기능)
-        else:
-            pass  # type에 따라 확장 가능
+    # 첫 항목으로 스펙 형태 판별
+    first_val = next(iter(doc.values()))
+    is_parsed = isinstance(first_val, dict) and (
+        "content" in first_val or "data" in first_val
+    )
+
+    if is_parsed:
+        # === 새 스펙 경로 (parser 출력) ===
+        for _, node in doc.items():
+            # 표 블록
+            if isinstance(node, dict) and isinstance(node.get("data"), list):
+                insert_table_and_style(
+                    hwp,
+                    node["data"],
+                    cell_styles=node.get("cell_styles"),
+                    cell_bg_colors=None,
+                    col_aligns=node.get("style", {}).get("cell_align"),
+                    cell_segments=node.get("cell_segments"),
+                    cell_merges=node.get("cell_merges"),
+                    cell_nested=node.get("cell_nested"),
+                    nested=False,
+                )
+            # 문단 블록
+            elif isinstance(node, dict) and ("content" in node or "segments" in node):
+                insert_paragraph_from_node(hwp, node)
+            # 기타 타입은 필요시 확장
+    else:
+        # === 옛 role+styles 경로 (기존 코드 유지) ===
+        for key, value in doc.items():
+            if isinstance(value, str) or (isinstance(value, dict) and "content" in value):
+                text = value if isinstance(value, str) else value["content"]
+                styles = heuristic_style_for_key(key)
+                insert_role_and_style(hwp, {key: text}, styles, key)
+            elif isinstance(value, dict) and "data" in value:
+                table_style = value.get("style", {})
+                cell_aligns = table_style.get("cell_align")
+                insert_table_and_style(
+                    hwp,
+                    value["data"],
+                    cell_styles=None,
+                    cell_bg_colors=[[table_style.get("header_bg")] * len(value["data"][0])]
+                                   + [[None] * len(value["data"][0])] * (len(value["data"]) - 1),
+                    col_aligns=cell_aligns,
+                )
 
     hwp.save_as(filename)
     hwp.quit()
+
 
 def heuristic_style_for_key(key):
     # 예시: key가 'title', 'header'면 굵게, 크게 등
